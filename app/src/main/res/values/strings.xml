@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">Stroller</string>
+    <!-- NOMBRES FRAGMENTS -->
+    <string name="fragment_title_conexion">Conexión</string>
+    <string name="fragment_title_transmision">Transmision</string>
+    <string name="fragment_title_escenas">Escenas</string>
+    <string name="fragment_title_audio">Audio</string>
+    <!-- TITULOS -->
+    <string name="titulo_no_conectado">No conectado</string>
+    <string name="titulo_conexion">OBS Conectado</string>
+    <string name="titulo_escenas">Escenas detectadas</string>
+    <string name="titulo_audio">Pistas de audio</string>
+    <string name="titulo_transmision">Transmisión</string>
+    <string name="titulo_conexion_no_conectado">Conecta tu OBS</string>
+    <string name="titulo_activity_tabbed_main">TabbedMainActivity</string>
+    <!-- BOTONES -->
+    <string name="btn_read_qr">Leer código QR</string>
+    <string name="btn_read_scenes">Recargar escenas</string>
+    <string name="btn_disconnect">Desconectar</string>
+    <string name="btn_iniciar_transmision">Iniciar transmisión</string>
+    <string name="btn_detener_transmision">Detener transmisión</string>
+    <string name="btn_iniciar_grabacion">Iniciar grabación</string>
+    <string name="btn_detener_grabacion">Detener grabación</string>
+    <!-- TEXTOS CUERPO -->
+    <string name="txt_conexion_duracion">Sesión:</string>
+    <string name="txt_conexion_fps">FPS:</string>
+    <string name="txt_conexion_cpu">CPU:</string>
+    <string name="txt_conexion_skipped">C. perdidos:</string>
+    <string name="txt_conexion_mem">Memoria:</string>
+    <string name="txt_conexion_bitrate">Bitrate:</string>
+    <!-- ALERTAS - TITULOS -->
+    <string name="alerta_emision_titulo">Emisión</string>
+    <string name="alerta_grabacion_titulo">Grabación</string>
+    <!-- ALERTAS - MENSAJES -->
+    <string name="alerta_emision_inicio_msg">¿Quieres comenzar a emitir en vivo?</string>
+    <string name="alerta_emision_final_msg">¿Quieres terminar la emisión en vivo?</string>
+    <string name="alerta_grabacion_inicio_msg">¿Quieres comenzar a grabar?</string>
+    <string name="alerta_grabacion_final_msg">¿Quieres terminar la grabación?</string>
+    <!-- ALERTAS - BOTONES -->
+    <string name="alerta_emision_inicio_btn_pos">Comenzar emisión</string>
+    <string name="alerta_emision_inicio_btn_neg">Cancelar</string>
+    <string name="alerta_emision_final_btn_pos">Finalizar emisión</string>
+    <string name="alerta_emision_final_btn_neg">Cancelar</string>
+    <string name="alerta_grabacion_inicio_btn_pos">Comenzar grabación</string>
+    <string name="alerta_grabacion_inicio_btn_neg">Cancelar</string>
+    <string name="alerta_grabacion_final_btn_pos">Finalizar grabación</string>
+    <string name="alerta_grabacion_final_btn_neg">Cancelar</string>
+    <!-- DESCRIPCIONES -->
+    <string name="desc_escenas_reload">Botón para obtener nuevamente las escenas desde OBS</string>
+    <string name="desc_audio_imgbtn">Botón para silenciar el audio del input en OBS</string>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Stroller" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.Stroller.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Stroller.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Stroller.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>
