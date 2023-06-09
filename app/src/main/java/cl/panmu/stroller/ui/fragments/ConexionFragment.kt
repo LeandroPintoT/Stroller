@@ -271,15 +271,6 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
                 popupView.findViewById<ConstraintLayout>(R.id.loadingBackground).background.alpha = 150
                 // crea la ventana del popup, si no es focusable, no se puede levantar el teclado para los edittext
                 loadingWindow = PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true)
-                // previene que se cierre el popup cuando se clickea fuera
-                try {
-                    val method = PopupWindow::class.java.getDeclaredMethod("setTouchModal", Boolean::class.java)
-                    method.isAccessible = true
-                    method.invoke(loadingWindow, false)
-                }
-                catch (e: Exception) {
-                    e.printStackTrace()
-                }
                 loadingWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
             }
             else if (show) {
@@ -458,15 +449,6 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
         popupView.findViewById<ConstraintLayout>(R.id.popupBackground).background.alpha = 150
         // crea la ventana del popup, si no es focusable, no se puede levantar el teclado para los edittext
         val popupWindow = PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true)
-        // previene que se cierre el popup cuando se clickea fuera
-        try {
-            val method = PopupWindow::class.java.getDeclaredMethod("setTouchModal", Boolean::class.java)
-            method.isAccessible = true
-            method.invoke(popupWindow, false)
-        }
-        catch (e: Exception) {
-            e.printStackTrace()
-        }
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
         val btnCancelar = popupView.findViewById<Button>(R.id.btnDatosCancelar)
         btnCancelar.setOnClickListener {
