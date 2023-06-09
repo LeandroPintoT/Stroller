@@ -1,18 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/view_pager"
         app:tabMode="scrollable" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/tabs"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tableLayoutBtnsStream"/>
+
+    <TableLayout
+        android:id="@+id/tableLayoutBtnsStream"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="*"
+        android:background="@color/dark_ocean_blue"
+        app:layout_constraintTop_toBottomOf="@+id/view_pager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:ignore="UselessParent">
+
+            <Button
+                android:id="@+id/btnStream"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_marginEnd="2dp"
+                android:layout_weight="1"
+                android:background="@color/red"
+                android:text="@string/btn_iniciar_transmision"
+                android:textColor="@color/white"
+                tools:ignore="ButtonStyle" />
+
+            <Button
+                android:id="@+id/btnRecord"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="2dp"
+                android:layout_weight="1"
+                android:background="@color/red"
+                android:text="@string/btn_iniciar_grabacion"
+                android:textColor="@color/white"
+                tools:ignore="ButtonStyle" />
+
+        </TableRow>
+    </TableLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

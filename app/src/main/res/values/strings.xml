@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Stroller</string>
-    <!-- NOMBRES FRAGMENTS -->
+    <!-- NOMBRES FRAGMENTOS -->
     <string name="fragment_title_conexion">Conexión</string>
     <string name="fragment_title_transmision">Transmision</string>
     <string name="fragment_title_escenas">Escenas</string>
@@ -38,28 +38,33 @@
     <!-- SPINNER -->
     <string name="txt_loading">Cargando…</string>
     <!-- ALERTAS - TITULOS -->
-    <string name="alerta_emision_titulo">Emisión</string>
-    <string name="alerta_grabacion_titulo">Grabación</string>
-    <string name="alerta_conexion_error">Error al conectar</string>
+    <string name="alerta_titulo_emision">Emisión</string>
+    <string name="alerta_titulo_grabacion">Grabación</string>
+    <string name="alerta_titulo_conexion_error">Error al conectar</string>
     <!-- ALERTAS - MENSAJES -->
-    <string name="alerta_emision_inicio_msg">¿Quieres comenzar a emitir en vivo?</string>
-    <string name="alerta_emision_final_msg">¿Quieres terminar la emisión en vivo?</string>
-    <string name="alerta_grabacion_inicio_msg">¿Quieres comenzar a grabar?</string>
-    <string name="alerta_grabacion_final_msg">¿Quieres terminar la grabación?</string>
-    <string name="alerta_conexion_error_msg">Ocurrió un error al conectar</string>
-    <string name="alerta_conexion_error_msg_host">La IP ingresada no es válida</string>
-    <string name="alerta_conexion_error_msg_port">No fue posible conectar con OBS</string>
-    <string name="alerta_conexion_error_msg_pass">La contraseña ingresada es incorrecta</string>
+    <string name="alerta_msg_emision_inicio">¿Quieres comenzar a emitir en vivo?</string>
+    <string name="alerta_msg_emision_final">¿Quieres terminar la emisión en vivo?</string>
+    <string name="alerta_msg_grabacion_inicio">¿Quieres comenzar a grabar?</string>
+    <string name="alerta_msg_grabacion_final">¿Quieres terminar la grabación?</string>
+    <string name="alerta_msg_conexion_error">Ocurrió un error al conectar</string>
+    <string name="alerta_msg_conexion_error_host">La IP ingresada no es válida</string>
+    <string name="alerta_msg_conexion_error_port">No fue posible conectar con OBS</string>
+    <string name="alerta_msg_conexion_error_pass">La contraseña ingresada es incorrecta</string>
     <!-- ALERTAS - BOTONES -->
-    <string name="alerta_emision_inicio_btn_pos">Comenzar emisión</string>
-    <string name="alerta_emision_inicio_btn_neg">Cancelar</string>
-    <string name="alerta_emision_final_btn_pos">Finalizar emisión</string>
-    <string name="alerta_emision_final_btn_neg">Cancelar</string>
-    <string name="alerta_grabacion_inicio_btn_pos">Comenzar grabación</string>
-    <string name="alerta_grabacion_inicio_btn_neg">Cancelar</string>
-    <string name="alerta_grabacion_final_btn_pos">Finalizar grabación</string>
-    <string name="alerta_grabacion_final_btn_neg">Cancelar</string>
-    <string name="alerta_conexion_error_btn_pos">Entendido</string>
+    <string name="alerta_btn_pos_emision_inicio">Comenzar emisión</string>
+    <string name="alerta_btn_pos_grabacion_inicio">Comenzar grabación</string>
+    <string name="alerta_btn_pos_emision_final">Finalizar emisión</string>
+    <string name="alerta_btn_pos_grabacion_final">Finalizar grabación</string>
+    <string name="alerta_btn_pos_conexion_error">Entendido</string>
+    <string name="alerta_btn_neg_emision_inicio">Cancelar</string>
+    <string name="alerta_btn_neg_grabacion_inicio">Cancelar</string>
+    <string name="alerta_btn_neg_emision_final">Cancelar</string>
+    <string name="alerta_btn_neg_grabacion_final">Cancelar</string>
+    <!-- TOAST -->
+    <string name="toast_msg_neg_iniciar_emision">No fue posible iniciar la emisión</string>
+    <string name="toast_msg_neg_detener_emision">No fue posible detener la emisión</string>
+    <string name="toast_msg_neg_iniciar_grabacion">No fue posible iniciar la grabación</string>
+    <string name="toast_msg_neg_detener_grabacion">No fue posible detener la grabación</string>
     <!-- DESCRIPCIONES -->
     <string name="desc_escenas_reload">Botón para obtener nuevamente las escenas desde OBS</string>
     <string name="desc_audio_imgbtn">Botón para silenciar el audio del input en OBS</string>

@@ -86,109 +86,17 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
             muestraDatosPopup()
         }
 
-        viewModel.isConnected.observe(viewLifecycleOwner) { isConnected ->
-            recargaBotones(!isConnected)
-            requireActivity().runOnUiThread {
-                val btnsLayout: TableLayout = view.findViewById(R.id.tableLayoutBtnsStream)
-                btnsLayout.visibility = if (isConnected) View.VISIBLE else View.INVISIBLE
-            }
-        }
+        viewModel.isConnected.observe(viewLifecycleOwner) { isConnected -> recargaBotones(!isConnected) }
 
         viewModel.isStreaming.observe(viewLifecycleOwner) { isStreaming ->
             // setea la visibilidad de la tabla de estadisticas de stream/grabacion
-            view.findViewById<TableLayout>(R.id.infoLayout).visibility = if (isStreaming) View.VISIBLE else if (viewModel.isRecording.value!!) View.VISIBLE else View.INVISIBLE
-            // actualiza boton stream
-            requireActivity().runOnUiThread {
-                val btnStream: Button = view.findViewById(R.id.btnStream)
-                btnStream.setText(if (isStreaming) R.string.btn_detener_transmision else R.string.btn_iniciar_transmision)
-                // si esta desconectado, hace el startForResult, si no, desconecta y recarga
-                btnStream.setOnClickListener(
-                    if (isStreaming) { {
-                        AlertDialog
-                            .Builder(requireActivity())
-                            .setTitle(R.string.alerta_emision_titulo)
-                            .setMessage(R.string.alerta_emision_final_msg)
-                            .setPositiveButton(R.string.alerta_emision_final_btn_pos) { _, _ ->
-                                viewModel.obsController.value?.stopStream {
-                                    if (it.isSuccessful)
-                                        requireActivity().runOnUiThread { viewModel.isStreaming(false) }
-                                    else
-                                        Toast.makeText(view.context, "No fue posible detener la emisión", Toast.LENGTH_LONG).show()
-                                }
-                            }
-                            .setNegativeButton(R.string.alerta_emision_final_btn_neg) { _, _ -> }
-                            .show()
-                    } }
-                    else { {
-                        AlertDialog
-                            .Builder(requireActivity())
-                            .setTitle(R.string.alerta_emision_titulo)
-                            .setMessage(R.string.alerta_emision_inicio_msg)
-                            .setPositiveButton(R.string.alerta_emision_inicio_btn_pos) { _, _ ->
-                                viewModel.obsController.value?.startStream {
-                                    if (it.isSuccessful) {
-                                        requireActivity().runOnUiThread {
-                                            viewModel.isStreaming(true)
-                                            viewModel.timeStream(LocalDateTime.now())
-                                        }
-                                    }
-                                    else
-                                        Toast.makeText(view.context, "No fue posible iniciar la emisión", Toast.LENGTH_LONG).show()
-                                }
-                            }
-                            .setNegativeButton(R.string.alerta_emision_inicio_btn_neg) { _, _ -> }
-                            .show()
-                    } }
-                )
-            }
+            view.findViewById<TableLayout>(R.id.infoLayout).visibility =
+                if (isStreaming) View.VISIBLE else if (viewModel.isRecording.value!!) View.VISIBLE else View.INVISIBLE
         }
 
         viewModel.isRecording.observe(viewLifecycleOwner) { isRecording ->
-            view.findViewById<TableLayout>(R.id.infoLayout).visibility = if (isRecording) View.VISIBLE else if (viewModel.isStreaming.value!!) View.VISIBLE else View.INVISIBLE
-            // actualiza boton stream
-            requireActivity().runOnUiThread {
-                val btnRecord: Button = view.findViewById(R.id.btnRecord)
-                btnRecord.setText(if (isRecording) R.string.btn_detener_grabacion else R.string.btn_iniciar_grabacion)
-                // si esta desconectado, hace el startForResult, si no, desconecta y recarga
-                btnRecord.setOnClickListener(
-                    if (isRecording) { {
-                        AlertDialog
-                            .Builder(requireActivity())
-                            .setTitle(R.string.alerta_grabacion_titulo)
-                            .setMessage(R.string.alerta_grabacion_final_msg)
-                            .setPositiveButton(R.string.alerta_grabacion_final_btn_pos) { _, _ ->
-                                viewModel.obsController.value?.stopRecord {
-                                    if (it.isSuccessful)
-                                        requireActivity().runOnUiThread { viewModel.isRecording(false) }
-                                    else
-                                        Toast.makeText(view.context, "No fue posible iniciar la grabación", Toast.LENGTH_LONG).show()
-                                }
-                            }
-                            .setNegativeButton(R.string.alerta_grabacion_final_btn_neg) { _, _ -> }
-                            .show()
-                    } }
-                    else { {
-                        AlertDialog
-                            .Builder(requireActivity())
-                            .setTitle(R.string.alerta_grabacion_titulo)
-                            .setMessage(R.string.alerta_grabacion_inicio_msg)
-                            .setPositiveButton(R.string.alerta_grabacion_inicio_btn_pos) { _, _ ->
-                                viewModel.obsController.value?.startRecord {
-                                    if (it.isSuccessful) {
-                                        requireActivity().runOnUiThread {
-                                            viewModel.isRecording(true)
-                                            viewModel.timeRecord(LocalDateTime.now())
-                                        }
-                                    }
-                                    else
-                                        Toast.makeText(view.context, "No fue posible iniciar la grabación", Toast.LENGTH_LONG).show()
-                                }
-                            }
-                            .setNegativeButton(R.string.alerta_grabacion_inicio_btn_neg) { _, _ -> }
-                            .show()
-                    } }
-                )
-            }
+            view.findViewById<TableLayout>(R.id.infoLayout).visibility =
+                if (isRecording) View.VISIBLE else if (viewModel.isStreaming.value!!) View.VISIBLE else View.INVISIBLE
         }
 
         startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -239,9 +147,9 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
                     toggleSpinner(view, false)
                     AlertDialog
                         .Builder(requireActivity())
-                        .setTitle(R.string.alerta_conexion_error)
-                        .setMessage("${resources.getString(R.string.alerta_conexion_error_msg)}:\n${getRazon(r)}")
-                        .setPositiveButton(R.string.alerta_conexion_error_btn_pos) { _, _ -> }
+                        .setTitle(R.string.alerta_titulo_conexion_error)
+                        .setMessage("${resources.getString(R.string.alerta_msg_conexion_error)}:\n${getRazon(r)}")
+                        .setPositiveButton(R.string.alerta_btn_pos_conexion_error) { _, _ -> }
                         .show()
                 }
             }
@@ -285,12 +193,12 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
         val msg = r.throwable.message
         if (razon.startsWith("Could not contact OBS") && msg != null) {
             if (msg.startsWith("Unable to resolve host")) {
-                return resources.getString(R.string.alerta_conexion_error_msg_host)
+                return resources.getString(R.string.alerta_msg_conexion_error_host)
             }
             return msg
         }
         else if (msg == null) {
-            return resources.getString(R.string.alerta_conexion_error_msg_port)
+            return resources.getString(R.string.alerta_msg_conexion_error_port)
         }
         return msg
     }
@@ -350,9 +258,9 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
                 toggleSpinner(view, false)
                 AlertDialog
                     .Builder(requireActivity())
-                    .setTitle(R.string.alerta_conexion_error)
-                    .setMessage(R.string.alerta_conexion_error_msg_pass)
-                    .setPositiveButton(R.string.alerta_conexion_error_btn_pos) { _, _ -> }
+                    .setTitle(R.string.alerta_titulo_conexion_error)
+                    .setMessage(R.string.alerta_msg_conexion_error_pass)
+                    .setPositiveButton(R.string.alerta_btn_pos_conexion_error) { _, _ -> }
                     .show()
             }
         }
