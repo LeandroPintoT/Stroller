@@ -89,10 +89,8 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
         viewModel.isConnected.observe(viewLifecycleOwner) { isConnected ->
             recargaBotones(!isConnected)
             requireActivity().runOnUiThread {
-                val btnStream: Button = view.findViewById(R.id.btnStream)
-                val btnRecord: Button = view.findViewById(R.id.btnRecord)
-                btnStream.visibility = if (isConnected) View.VISIBLE else View.INVISIBLE
-                btnRecord.visibility = if (isConnected) View.VISIBLE else View.INVISIBLE
+                val btnsLayout: TableLayout = view.findViewById(R.id.tableLayoutBtnsStream)
+                btnsLayout.visibility = if (isConnected) View.VISIBLE else View.INVISIBLE
             }
         }
 
