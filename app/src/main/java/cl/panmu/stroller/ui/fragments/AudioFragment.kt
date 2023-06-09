@@ -58,13 +58,15 @@ class AudioFragment : Fragment() {
             textoTitulo.text = resources.getText(if (isConnected) R.string.titulo_audio else R.string.titulo_no_conectado)
 
             if (isConnected) {
-                btnRecargar.visibility = View.VISIBLE
+                requireActivity().runOnUiThread{ btnRecargar.visibility = View.VISIBLE }
                 obtenerAudio()
             }
             else {
-                btnRecargar.visibility = View.INVISIBLE
-                val audioLayout: TableLayout = view.findViewById(R.id.audioLayout)
-                audioLayout.removeAllViews()
+                requireActivity().runOnUiThread {
+                    btnRecargar.visibility = View.INVISIBLE
+                    val audioLayout: TableLayout = view.findViewById(R.id.audioLayout)
+                    audioLayout.removeAllViews()
+                }
             }
         }
 

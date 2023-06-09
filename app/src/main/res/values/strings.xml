@@ -35,6 +35,8 @@
     <string name="txt_popup_pass">Contraseña:</string>
     <string name="btn_popup_conectar">Conectar</string>
     <string name="btn_popup_cancelar">Cancelar</string>
+    <!-- SPINNER -->
+    <string name="txt_loading">Cargando…</string>
     <!-- ALERTAS - TITULOS -->
     <string name="alerta_emision_titulo">Emisión</string>
     <string name="alerta_grabacion_titulo">Grabación</string>

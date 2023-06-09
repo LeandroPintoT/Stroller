@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -55,6 +54,7 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
     lateinit var mainHandler: Handler
     var lastBytes: Long = 0
     private val viewModel: PageViewModel by activityViewModels()
+    private lateinit var loadingWindow: PopupWindow
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -234,10 +234,11 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
             .onConnect { onObsConnect() }
             .onClose { code -> onObsClose(code) }
             .onDisconnect(::onObsDisconnect)
-            .onCommunicatorError {}
+            .onCommunicatorError { toggleSpinner(view, false) }
             .onControllerError { r ->
                 requireActivity().runOnUiThread {
                     Log.d("ERROR", "Localized: ${r.throwable.localizedMessage} - Razon: ${r.reason} - Msg: ${r.throwable.message}")
+                    toggleSpinner(view, false)
                     AlertDialog
                         .Builder(requireActivity())
                         .setTitle(R.string.alerta_conexion_error)
@@ -255,9 +256,39 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
             }
             .build())
 
+        toggleSpinner(view, true)
+
         Thread {
             viewModel.obsController.value?.connect()
         }.start()
+    }
+
+    @SuppressLint("InflateParams")
+    private fun toggleSpinner(view: View, show: Boolean) {
+        requireActivity().runOnUiThread {
+            if (show && !this::loadingWindow.isInitialized) {
+                val popupView = LayoutInflater.from(view.context).inflate(R.layout.loading_spinner, null)
+                popupView.findViewById<ConstraintLayout>(R.id.loadingBackground).background.alpha = 150
+                // crea la ventana del popup, si no es focusable, no se puede levantar el teclado para los edittext
+                loadingWindow = PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true)
+                // previene que se cierre el popup cuando se clickea fuera
+                try {
+                    val method = PopupWindow::class.java.getDeclaredMethod("setTouchModal", Boolean::class.java)
+                    method.isAccessible = true
+                    method.invoke(loadingWindow, false)
+                }
+                catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                loadingWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+            }
+            else if (show) {
+                loadingWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+            }
+            else if (this::loadingWindow.isInitialized) {
+                loadingWindow.dismiss()
+            }
+        }
     }
 
     private fun getRazon(r: ReasonThrowable): String {
@@ -319,17 +350,22 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
         }
 
         guardaDatos(jsonObs)
+
+        toggleSpinner(view, false)
     }
 
     private fun onObsClose(code: WebSocketCloseCode) {
         Log.d("ONOBSCLOSE", "Cerrado: Code: ${code.code} - Name: ${code.name}")
         if (code.code == 4009) {
-            AlertDialog
-                .Builder(requireActivity())
-                .setTitle(R.string.alerta_conexion_error)
-                .setMessage(R.string.alerta_conexion_error_msg_pass)
-                .setPositiveButton(R.string.alerta_conexion_error_btn_pos) { _, _ -> }
-                .show()
+            requireActivity().runOnUiThread {
+                toggleSpinner(view, false)
+                AlertDialog
+                    .Builder(requireActivity())
+                    .setTitle(R.string.alerta_conexion_error)
+                    .setMessage(R.string.alerta_conexion_error_msg_pass)
+                    .setPositiveButton(R.string.alerta_conexion_error_btn_pos) { _, _ -> }
+                    .show()
+            }
         }
     }
 
@@ -420,8 +456,6 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
     private fun muestraDatosPopup() {
         val popupView = LayoutInflater.from(view.context).inflate(R.layout.popup_conexion_datos, null)
         popupView.findViewById<ConstraintLayout>(R.id.popupBackground).background.alpha = 150
-        val displayMetrics = DisplayMetrics()
-        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
         // crea la ventana del popup, si no es focusable, no se puede levantar el teclado para los edittext
         val popupWindow = PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true)
         // previene que se cierre el popup cuando se clickea fuera
