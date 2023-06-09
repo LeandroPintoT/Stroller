@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txtTitulo"
+        android:id="@+id/txtTituloAudio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/titulo_no_conectado"
@@ -39,11 +39,11 @@
         android:scaleType="fitCenter"
         android:padding="1dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtTitulo"
+        app:layout_constraintTop_toBottomOf="@+id/txtTituloAudio"
         android:contentDescription="@string/desc_escenas_reload" />
 
     <ScrollView
-        android:id="@+id/scrollView"
+        android:id="@+id/scrollViewAudio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,8 +55,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:stretchColumns="0"
-            app:layout_constraintTop_toBottomOf="@+id/scrollView" >
+            android:stretchColumns="0" >
 
             <TableRow
                 android:layout_width="match_parent"

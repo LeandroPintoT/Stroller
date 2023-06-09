@@ -47,7 +47,7 @@ class AudioFragment : Fragment() {
         _binding = inflater.inflate(R.layout.fragment_audio, container, false)
         view = _binding!!
 
-        val textoTitulo: TextView = view.findViewById(R.id.txtTitulo)
+        val textoTitulo: TextView = view.findViewById(R.id.txtTituloAudio)
         val btnRecargar: ImageButton = view.findViewById(R.id.btnRecargar)
 
         btnRecargar.setOnClickListener {
@@ -59,7 +59,7 @@ class AudioFragment : Fragment() {
 
             if (isConnected) {
                 btnRecargar.visibility = View.VISIBLE
-                recargarAudio()
+                obtenerAudio()
             }
             else {
                 btnRecargar.visibility = View.INVISIBLE
@@ -110,7 +110,7 @@ class AudioFragment : Fragment() {
         val tabla: TableLayout = view.findViewById(R.id.audioLayout)
         tabla.removeAllViews()
 
-        for (audio in if (viewModel.audioList.value != null) viewModel.audioList.value!!.sortedBy { audio -> audio.escena } else ArrayList()) {
+        viewModel.audioList.value?.sortedBy { audio -> audio.escena }?.forEach { audio ->
             val row = TableRow(view.context)
             row.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT)
             tabla.addView(row)
@@ -157,11 +157,13 @@ class AudioFragment : Fragment() {
             imgbtn.adjustViewBounds = true
             imgbtn.scaleType = ImageView.ScaleType.FIT_CENTER
             imgbtn.setPadding(1)
-            imgbtn.setImageResource(R.drawable.ic_volume_on)
+            viewModel.obsController.value?.getInputMute(audio.escena) {
+                requireActivity().runOnUiThread { imgbtn.setImageResource(if (it.inputMuted) R.drawable.ic_volume_off else R.drawable.ic_volume_on) }
+            }
             imgbtn.contentDescription = resources.getText(R.string.desc_audio_imgbtn)
             imgbtn.setOnClickListener {
                 viewModel.obsController.value?.toggleInputMute(audio.escena) {
-                    imgbtn.setImageResource(if (it.inputMuted) R.drawable.ic_volume_off else R.drawable.ic_volume_on)
+                    requireActivity().runOnUiThread { imgbtn.setImageResource(if (it.inputMuted) R.drawable.ic_volume_off else R.drawable.ic_volume_on) }
                 }
             }
             row.addView(imgbtn)

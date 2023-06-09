@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txtTitulo"
+        android:id="@+id/txtTituloEscenas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/titulo_no_conectado"
@@ -39,11 +39,11 @@
         android:scaleType="fitCenter"
         android:padding="1dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtTitulo"
+        app:layout_constraintTop_toBottomOf="@+id/txtTituloEscenas"
         android:contentDescription="@string/desc_escenas_reload" />
 
     <ScrollView
-        android:id="@+id/scrollView"
+        android:id="@+id/scrollViewEscenas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:stretchColumns="*"
-            app:layout_constraintTop_toBottomOf="@+id/scrollView" />
+            app:layout_constraintTop_toBottomOf="@+id/scrollViewEscenas" />
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/txtTitulo"
+        android:id="@+id/txtTituloConexion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -35,14 +35,14 @@
         android:layout_height="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtTitulo" />
+        app:layout_constraintTop_toBottomOf="@+id/txtTituloConexion" />
 
     <LinearLayout
         android:id="@+id/btnLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/space2">
@@ -53,7 +53,17 @@
             android:layout_height="60dp"
             android:backgroundTint="@color/ocean_blue"
             android:text="@string/btn_read_qr"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            tools:ignore="ButtonStyle" />
+
+        <Button
+            android:id="@+id/btnDatos"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:backgroundTint="@color/ocean_blue"
+            android:text="@string/btn_enter_data"
+            android:textColor="@color/white"
+            tools:ignore="ButtonStyle" />
     </LinearLayout>
 
     <Space

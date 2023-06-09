@@ -1,29 +1,40 @@
 package cl.panmu.stroller.ui.fragments
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
+import android.util.DisplayMetrics
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.PopupWindow
 import android.widget.TableLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import cl.panmu.stroller.R
 import cl.panmu.stroller.ui.main.PageViewModel
 import cl.panmu.stroller.util.QrScanner
 import io.obswebsocket.community.client.OBSRemoteController
+import io.obswebsocket.community.client.WebSocketCloseCode
+import io.obswebsocket.community.client.listener.lifecycle.ReasonThrowable
 import io.obswebsocket.community.client.message.event.outputs.RecordStateChangedEvent
 import io.obswebsocket.community.client.message.event.outputs.StreamStateChangedEvent
 import org.json.JSONObject
@@ -69,6 +80,11 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val btnDatos = view.findViewById<Button>(R.id.btnDatos)
+        btnDatos.setOnClickListener {
+            muestraDatosPopup()
+        }
 
         viewModel.isConnected.observe(viewLifecycleOwner) { isConnected ->
             recargaBotones(!isConnected)
@@ -191,26 +207,7 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
                     jsonObs.put("port", port)
                     jsonObs.put("pass", pass)
 
-                    viewModel.obsController(OBSRemoteController.builder()
-                        .autoConnect(false)
-                        .host(host) // Default host
-                        .port(port) // Default port
-                        .password(pass) // Provide your password here
-                        .connectionTimeout(3) // Seconds the client will wait for OBS to respond
-                        .lifecycle() // para agregar callbacks
-                            .onReady(::onObsReady) // agrega el callback onReady
-                            .onConnect { onObsConnect() }
-                            .onClose { onObsClose() }
-                            .onDisconnect(::onObsDisconnect)
-                            .and() // hace build al lifecycle
-                        .registerEventListener(StreamStateChangedEvent::class.java) {
-                            requireActivity().runOnUiThread { viewModel.isStreaming(it.outputActive) }
-                        }
-                        .registerEventListener(RecordStateChangedEvent::class.java) {
-                            requireActivity().runOnUiThread { viewModel.isRecording(it.outputActive) }
-                        }
-                        .build())
-                    viewModel.obsController.value?.connect()
+                    conectar(jsonObs.get("host").toString(), jsonObs.get("port").toString(), jsonObs.get("pass").toString())
                 }
             }
         }
@@ -218,29 +215,74 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
         val config = File(requireActivity().filesDir, "config.cfg")
         if (config.exists() && config.readLines().isNotEmpty()) {
             jsonObs = JSONObject(config.readLines().first())
-            viewModel.obsController(OBSRemoteController.builder()
-                .autoConnect(false)
-                .host(jsonObs.get("host").toString()) // Default host
-                .port(Integer.parseInt(jsonObs.get("port").toString())) // Default port
-                .password(jsonObs.get("pass").toString()) // Provide your password here
-                .connectionTimeout(3) // Seconds the client will wait for OBS to respond
-                .lifecycle() // para agregar callbacks
-                .onReady(::onObsReady) // agrega el callback onReady
-                .onConnect { onObsConnect() }
-                .onClose { onObsClose() }
-                .onDisconnect(::onObsDisconnect)
-                .and() // hace build al lifecycle
-                .registerEventListener(StreamStateChangedEvent::class.java) {
-                    requireActivity().runOnUiThread { viewModel.isStreaming(it.outputActive) }
-                }
-                .registerEventListener(RecordStateChangedEvent::class.java) {
-                    requireActivity().runOnUiThread { viewModel.isRecording(it.outputActive) }
-                }
-                .build())
-            viewModel.obsController.value?.connect()
+            conectar(jsonObs.get("host").toString(), jsonObs.get("port").toString(), jsonObs.get("pass").toString())
         }
         else {
             recargaBotones(true)
+        }
+    }
+
+    private fun conectar(host: String, port: String, pass: String) {
+        viewModel.obsController(OBSRemoteController.builder()
+            .autoConnect(false)
+            .host(host) // Default host
+            .port(Integer.parseInt(port)) // Default port
+            .password(pass) // Provide your password here
+            .connectionTimeout(3) // Seconds the client will wait for OBS to respond
+            .lifecycle() // para agregar callbacks
+            .onReady(::onObsReady) // agrega el callback onReady
+            .onConnect { onObsConnect() }
+            .onClose { code -> onObsClose(code) }
+            .onDisconnect(::onObsDisconnect)
+            .onCommunicatorError {}
+            .onControllerError { r ->
+                requireActivity().runOnUiThread {
+                    Log.d("ERROR", "Localized: ${r.throwable.localizedMessage} - Razon: ${r.reason} - Msg: ${r.throwable.message}")
+                    AlertDialog
+                        .Builder(requireActivity())
+                        .setTitle(R.string.alerta_conexion_error)
+                        .setMessage("${resources.getString(R.string.alerta_conexion_error_msg)}:\n${getRazon(r)}")
+                        .setPositiveButton(R.string.alerta_conexion_error_btn_pos) { _, _ -> }
+                        .show()
+                }
+            }
+            .and() // hace build al lifecycle
+            .registerEventListener(StreamStateChangedEvent::class.java) {
+                requireActivity().runOnUiThread { viewModel.isStreaming(it.outputActive) }
+            }
+            .registerEventListener(RecordStateChangedEvent::class.java) {
+                requireActivity().runOnUiThread { viewModel.isRecording(it.outputActive) }
+            }
+            .build())
+
+        Thread {
+            viewModel.obsController.value?.connect()
+        }.start()
+    }
+
+    private fun getRazon(r: ReasonThrowable): String {
+        val razon = r.reason
+        val msg = r.throwable.message
+        if (razon.startsWith("Could not contact OBS") && msg != null) {
+            if (msg.startsWith("Unable to resolve host")) {
+                return resources.getString(R.string.alerta_conexion_error_msg_host)
+            }
+            return msg
+        }
+        else if (msg == null) {
+            return resources.getString(R.string.alerta_conexion_error_msg_port)
+        }
+        return msg
+    }
+
+    private fun guardaDatos(jsonObs: JSONObject) {
+        val config = File(requireActivity().filesDir, "config.cfg")
+        if (config.exists()) {
+            if (config.delete() && config.createNewFile())
+                config.writeText(jsonObs.toString())
+        } else {
+            if (config.createNewFile())
+                config.writeText(jsonObs.toString())
         }
     }
 
@@ -248,8 +290,11 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
         Log.d("ONOBSREADY", "ready")
 
         requireActivity().runOnUiThread {
-            val txtTitulo: TextView = view.findViewById(R.id.txtTitulo)
+            val txtTitulo: TextView = view.findViewById(R.id.txtTituloConexion)
             txtTitulo.setText(R.string.titulo_conexion)
+            val btnDatos = view.findViewById<Button>(R.id.btnDatos)
+            btnDatos.visibility = View.INVISIBLE
+            btnDatos.layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT)
             viewModel.isConnected(true)
         }
 
@@ -273,18 +318,19 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
                 }
         }
 
-        val config = File(requireActivity().filesDir, "config.cfg")
-        if (config.exists()) {
-            if (config.delete() && config.createNewFile())
-                config.writeText(jsonObs.toString())
-        } else {
-            if (config.createNewFile())
-                config.writeText(jsonObs.toString())
-        }
+        guardaDatos(jsonObs)
     }
 
-    private fun onObsClose() {
-        Log.d("ONOBSCLOSE", "Cerrado")
+    private fun onObsClose(code: WebSocketCloseCode) {
+        Log.d("ONOBSCLOSE", "Cerrado: Code: ${code.code} - Name: ${code.name}")
+        if (code.code == 4009) {
+            AlertDialog
+                .Builder(requireActivity())
+                .setTitle(R.string.alerta_conexion_error)
+                .setMessage(R.string.alerta_conexion_error_msg_pass)
+                .setPositiveButton(R.string.alerta_conexion_error_btn_pos) { _, _ -> }
+                .show()
+        }
     }
 
     private fun onObsConnect() {
@@ -294,8 +340,11 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
     private fun onObsDisconnect() {
         Log.d("ONOBSDISCONNECT", "Desconectado")
         requireActivity().runOnUiThread {
-            val txtTitulo: TextView = view.findViewById(R.id.txtTitulo)
+            val txtTitulo: TextView = view.findViewById(R.id.txtTituloConexion)
             txtTitulo.setText(R.string.titulo_conexion_no_conectado)
+            val btnDatos = view.findViewById<Button>(R.id.btnDatos)
+            btnDatos.visibility = View.VISIBLE
+            btnDatos.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT)
             viewModel.isConnected(false)
         }
     }
@@ -317,7 +366,7 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
     private val updateTextTask = object : Runnable {
         override fun run() {
             mainHandler.postDelayed(this, 1000)
-             if (viewModel.isConnected.value != null && viewModel.isConnected.value!!) {
+            if (viewModel.isConnected.value != null && viewModel.isConnected.value!!) {
                 if (viewModel.isStreaming.value!!) {
                     viewModel.obsController.value?.getStreamStatus { streamStats ->
                         val currBytes = streamStats.outputBytes.toLong()
@@ -325,7 +374,7 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
                         lastBytes = currBytes
                         viewModel.obsController.value?.getStats { stats ->
                             view.findViewById<TextView>(R.id.txtDuracion).text = if (viewModel.timeStream.value != null)
-                                (LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) - viewModel.timeStream.value!!.toEpochSecond(ZoneOffset.UTC)).toString() else "0"
+                                getTimeFormatted(viewModel.timeStream.value!!) else "0"
                             val usage = ((stats.cpuUsage.toFloat() * 100).roundToInt() / 100).toString() + "%"
                             view.findViewById<TextView>(R.id.txtCPU).text = usage
                             view.findViewById<TextView>(R.id.txtFPS).text = ((stats.activeFps.toFloat() * 100).roundToInt() / 100).toString()
@@ -361,9 +410,50 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
     private fun getTimeFormatted(inicio: LocalDateTime): String {
         val difSecs = LocalDateTime.now(ZoneOffset.UTC).toEpochSecond(ZoneOffset.UTC) - inicio.toEpochSecond(ZoneOffset.UTC)
         val secs = difSecs % 60
-        val mins = floor(difSecs.toDouble() / 60)
-        val horas = floor(mins / 60)
+        val auxMins = floor(difSecs.toDouble() / 60)
+        val mins = auxMins % 60
+        val horas = floor(auxMins / 60)
         return String.format("%02d:%02d:%02d", horas.toInt(), mins.toInt(), secs.toInt())
+    }
+
+    @SuppressLint("InflateParams")
+    private fun muestraDatosPopup() {
+        val popupView = LayoutInflater.from(view.context).inflate(R.layout.popup_conexion_datos, null)
+        popupView.findViewById<ConstraintLayout>(R.id.popupBackground).background.alpha = 150
+        val displayMetrics = DisplayMetrics()
+        requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+        // crea la ventana del popup, si no es focusable, no se puede levantar el teclado para los edittext
+        val popupWindow = PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true)
+        // previene que se cierre el popup cuando se clickea fuera
+        try {
+            val method = PopupWindow::class.java.getDeclaredMethod("setTouchModal", Boolean::class.java)
+            method.isAccessible = true
+            method.invoke(popupWindow, false)
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+        }
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+        val btnCancelar = popupView.findViewById<Button>(R.id.btnDatosCancelar)
+        btnCancelar.setOnClickListener {
+            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            imm?.hideSoftInputFromWindow(popupView.windowToken, 0)
+            popupWindow.dismiss()
+        }
+        val etxtHost = popupView.findViewById<EditText>(R.id.etxt_ip)
+        val etxtPort = popupView.findViewById<EditText>(R.id.etxt_port)
+        val etxtPass = popupView.findViewById<EditText>(R.id.etxt_pass)
+        val btnConectar = popupView.findViewById<Button>(R.id.btnDatosConectar)
+        btnConectar.setOnClickListener {
+            if (etxtHost.text.toString().trim() != "" && etxtPort.text.toString().trim() != "" && etxtPass.text.toString().trim() != "") {
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                imm?.hideSoftInputFromWindow(popupView.windowToken, 0)
+                conectar(etxtHost.text.toString(), etxtPort.text.toString(), etxtPass.text.toString())
+                popupWindow.dismiss()
+            }
+            else
+                Toast.makeText(view.context, "Debes ingresar datos en todos los campos", Toast.LENGTH_LONG).show()
+        }
     }
 
     override fun onPause() {

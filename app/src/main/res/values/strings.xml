@@ -15,6 +15,7 @@
     <string name="titulo_activity_tabbed_main">TabbedMainActivity</string>
     <!-- BOTONES -->
     <string name="btn_read_qr">Leer código QR</string>
+    <string name="btn_enter_data">Escribir datos</string>
     <string name="btn_read_scenes">Recargar escenas</string>
     <string name="btn_disconnect">Desconectar</string>
     <string name="btn_iniciar_transmision">Iniciar transmisión</string>
@@ -28,14 +29,25 @@
     <string name="txt_conexion_skipped">C. perdidos:</string>
     <string name="txt_conexion_mem">Memoria:</string>
     <string name="txt_conexion_bitrate">Bitrate:</string>
+    <!-- POPUPS -->
+    <string name="txt_popup_host">IP:</string>
+    <string name="txt_popup_puerto">Puerto:</string>
+    <string name="txt_popup_pass">Contraseña:</string>
+    <string name="btn_popup_conectar">Conectar</string>
+    <string name="btn_popup_cancelar">Cancelar</string>
     <!-- ALERTAS - TITULOS -->
     <string name="alerta_emision_titulo">Emisión</string>
     <string name="alerta_grabacion_titulo">Grabación</string>
+    <string name="alerta_conexion_error">Error al conectar</string>
     <!-- ALERTAS - MENSAJES -->
     <string name="alerta_emision_inicio_msg">¿Quieres comenzar a emitir en vivo?</string>
     <string name="alerta_emision_final_msg">¿Quieres terminar la emisión en vivo?</string>
     <string name="alerta_grabacion_inicio_msg">¿Quieres comenzar a grabar?</string>
     <string name="alerta_grabacion_final_msg">¿Quieres terminar la grabación?</string>
+    <string name="alerta_conexion_error_msg">Ocurrió un error al conectar</string>
+    <string name="alerta_conexion_error_msg_host">La IP ingresada no es válida</string>
+    <string name="alerta_conexion_error_msg_port">No fue posible conectar con OBS</string>
+    <string name="alerta_conexion_error_msg_pass">La contraseña ingresada es incorrecta</string>
     <!-- ALERTAS - BOTONES -->
     <string name="alerta_emision_inicio_btn_pos">Comenzar emisión</string>
     <string name="alerta_emision_inicio_btn_neg">Cancelar</string>
@@ -45,6 +57,7 @@
     <string name="alerta_grabacion_inicio_btn_neg">Cancelar</string>
     <string name="alerta_grabacion_final_btn_pos">Finalizar grabación</string>
     <string name="alerta_grabacion_final_btn_neg">Cancelar</string>
+    <string name="alerta_conexion_error_btn_pos">Entendido</string>
     <!-- DESCRIPCIONES -->
     <string name="desc_escenas_reload">Botón para obtener nuevamente las escenas desde OBS</string>
     <string name="desc_audio_imgbtn">Botón para silenciar el audio del input en OBS</string>

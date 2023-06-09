@@ -25,7 +25,9 @@
         <activity
             android:name=".TabbedMainActivity"
             android:exported="true"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" >
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
+            android:windowSoftInputMode="stateVisible"
+            android:focusableInTouchMode="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -42,7 +42,7 @@ class EscenasFragment : Fragment() {
         _binding = inflater.inflate(R.layout.fragment_escenas, container, false)
         view = _binding!!
 
-        val textoTitulo: TextView = view.findViewById(R.id.txtTitulo)
+        val textoTitulo: TextView = view.findViewById(R.id.txtTituloEscenas)
         val btnRecargar: ImageButton = view.findViewById(R.id.btnRecargar)
 
         btnRecargar.setOnClickListener {
@@ -68,51 +68,54 @@ class EscenasFragment : Fragment() {
 
     private fun recargaEscenas(escenas: List<Scene>, currScene: String) {
         // vacia la tabla
-        val sceneLayout: TableLayout = view.findViewById(R.id.scenesLayout)
-        sceneLayout.removeAllViews()
+        requireActivity().runOnUiThread {
+            val sceneLayout: TableLayout = view.findViewById(R.id.scenesLayout)
+            sceneLayout.removeAllViews()
 
-        if (escenas.isNotEmpty()) {
-            // declara el maximo de columnas
-            val maxCols = 2
-            var col = 0
-            var rowId = View.generateViewId()
-            var rowEscenas: TableRow
+            if (escenas.isNotEmpty()) {
+                // declara el maximo de columnas
+                val maxCols = 2
+                var col = 0
+                var rowId = View.generateViewId()
+                var rowEscenas: TableRow
 
-            obtenerAudio(currScene)
+                obtenerAudio(currScene)
 
-            for (escena in escenas) {
-                // si es la primera columna, agrega una nueva fila
-                if (col == 0) {
-                    rowId = View.generateViewId()
-                    rowEscenas = TableRow(view.context)
-                    val paramsEscenas = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT)
-                    paramsEscenas.gravity = Gravity.CENTER
-                    rowEscenas.id = rowId
-                    sceneLayout.addView(rowEscenas, paramsEscenas)
+                for (escena in escenas) {
+                    // si es la primera columna, agrega una nueva fila
+                    if (col == 0) {
+                        rowId = View.generateViewId()
+                        rowEscenas = TableRow(view.context)
+                        val paramsEscenas = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT)
+                        paramsEscenas.gravity = Gravity.CENTER
+                        rowEscenas.id = rowId
+                        sceneLayout.addView(rowEscenas, paramsEscenas)
+                    }
+                    // si no, obtiene la ultima fila creada
+                    else {
+                        rowEscenas = sceneLayout.findViewById(rowId) as TableRow
+                    }
+                    // crea el boton de la escena
+                    val btn = Button(view.context)
+                    btn.background.colorFilter = LightingColorFilter(resources.getColor(R.color.ocean_blue, null), 1)
+                    btn.setTextColor(resources.getColor(R.color.white, null))
+                    btn.text = escena.sceneName
+                    btn.setOnClickListener {
+                        viewModel.obsController.value?.setCurrentProgramScene(escena.sceneName) {
+                            recargaEscenas(escenas, escena.sceneName)
+                        }
+                    }
+                    // si es la escena seleccionada, le setea un color diferente
+                    if (escena.sceneName == currScene) {
+                        btn.background.colorFilter = LightingColorFilter(resources.getColor(R.color.green, null), 1)
+                    }
+                    // asigna 0 width y 1 de weight
+                    val params = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f)
+                    // agrega el boton a la fila
+                    rowEscenas.addView(btn, params)
+                    // actualiza la columna siguiente
+                    col = if (col / (maxCols - 1) != 1) (col + 1) else 0
                 }
-                // si no, obtiene la ultima fila creada
-                else {
-                    rowEscenas = sceneLayout.findViewById(rowId) as TableRow
-                }
-                // crea el boton de la escena
-                val btn = Button(view.context)
-                btn.background.colorFilter = LightingColorFilter(resources.getColor(R.color.ocean_blue, null), 1)
-                btn.setTextColor(resources.getColor(R.color.white, null))
-                btn.text = escena.sceneName
-                btn.setOnClickListener {
-                    viewModel.obsController.value?.setCurrentProgramScene(escena.sceneName, 300)
-                    recargaEscenas(escenas, escena.sceneName)
-                }
-                // si es la escena seleccionada, le setea un color diferente
-                if (escena.sceneName == currScene) {
-                    btn.background.colorFilter = LightingColorFilter(resources.getColor(R.color.green, null), 1)
-                }
-                // asigna 0 width y 1 de weight
-                val params = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1f)
-                // agrega el boton a la fila
-                rowEscenas.addView(btn, params)
-                // actualiza la columna siguiente
-                col = if (col / (maxCols - 1) != 1) (col + 1) else 0
             }
         }
     }
