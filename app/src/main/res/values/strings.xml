@@ -35,7 +35,11 @@
     <string name="txt_conexion_skipped">C. perdidos:</string>
     <string name="txt_conexion_mem">Memoria:</string>
     <string name="txt_conexion_bitrate">Bitrate:</string>
-    <string name="txt_chat_webview"><p>Ingresa el nombre de tu canal en el campo de arriba y presiona "Conectar"</p></string>
+    <string name="txt_chat_webview">
+        <p>Si transmites en Youtube, ingresa el ID del directo en el campo de arriba (está en el link del directo, ej. https://www.youtube.com/watch?v=ID_DIRECTO) y presiona el botón CONECTAR.</p>
+        <p>Si transmites en Twitch, ingresa el nombre de tu canal en el campo de arriba y presiona CONECTAR.</p>
+        <p>PD: Puedes conectarte a cualquier chat de Twitch o Youtube en esta pestaña, pero lo ideal es usar el tuyo.</p>
+    </string>
     <!-- POPUPS -->
     <string name="txt_popup_host">IP:</string>
     <string name="txt_popup_puerto">Puerto:</string>

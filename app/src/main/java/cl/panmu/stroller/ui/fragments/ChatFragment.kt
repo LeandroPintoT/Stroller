@@ -78,7 +78,12 @@ class ChatFragment : Fragment() {
             val canal = etxtCanal.text.toString()
             if (canal != "") {
                 requireActivity().runOnUiThread { viewModel.username(canal) }
-                val url = if (it.streamServiceSettings.get("service").asString == "Twitch") "https://www.twitch.tv/embed/$canal/chat?parent=$canal.dev&darkpopout" else ""
+                val url =
+                    when (it.streamServiceSettings.get("service").asString) {
+                        "Twitch" -> "https://www.twitch.tv/embed/$canal/chat?parent=$canal.dev&darkpopout"
+                        "YouTube - RTMPS" -> "https://www.youtube.com/live_chat?v=$canal&embed_domain=$canal.dev"
+                        else -> ""
+                    }
                 if (url != "") {
                     requireActivity().runOnUiThread {
                         wv.settings.javaScriptEnabled = true
