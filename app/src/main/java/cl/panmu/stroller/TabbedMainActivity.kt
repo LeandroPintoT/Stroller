@@ -2,6 +2,7 @@ package cl.panmu.stroller
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TableLayout
@@ -11,12 +12,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import cl.panmu.stroller.databinding.ActivityTabbedMainBinding
 import cl.panmu.stroller.ui.fragments.AudioFragment
+import cl.panmu.stroller.ui.fragments.ChatFragment
 import cl.panmu.stroller.ui.fragments.ConexionFragment
 import cl.panmu.stroller.ui.fragments.EscenasFragment
+import cl.panmu.stroller.ui.fragments.FuentesFragment
 import cl.panmu.stroller.ui.main.PageViewModel
 import cl.panmu.stroller.ui.main.PagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import org.json.JSONObject
+import java.io.File
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
@@ -35,14 +40,23 @@ class TabbedMainActivity : AppCompatActivity() {
         val pagerAdapter = PagerAdapter(supportFragmentManager, lifecycle)
         val viewPager: ViewPager2 = binding.viewPager
         pagerAdapter.addFragment(ConexionFragment(), resources.getString(R.string.fragment_title_conexion))
+        pagerAdapter.addFragment(ChatFragment(), resources.getString(R.string.fragment_title_chat))
         pagerAdapter.addFragment(EscenasFragment(), resources.getString(R.string.fragment_title_escenas))
+        pagerAdapter.addFragment(FuentesFragment(), resources.getString(R.string.fragment_title_fuentes))
         pagerAdapter.addFragment(AudioFragment(), resources.getString(R.string.fragment_title_audio))
         viewPager.adapter = pagerAdapter
 
         val tabs: TabLayout = binding.tabs
+        tabs.addOnTabSelectedListener(TabSelectedListener(this))
         TabLayoutMediator(tabs, viewPager) { tab, position ->
             tab.text = pagerAdapter.getFragmentTitle(position)
         }.attach()
+
+        val userlogged = File(filesDir, "userlogged.cfg")
+        if (userlogged.exists() && userlogged.readLines().isNotEmpty()) {
+            val jsonObs = JSONObject(userlogged.readLines().first())
+            viewModel.username(jsonObs.get("user").toString())
+        }
 
         viewModel.isConnected.observe(this) { isConnected ->
             runOnUiThread {
@@ -146,5 +160,34 @@ class TabbedMainActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+}
+
+class TabSelectedListener(private val ctx: TabbedMainActivity) : TabLayout.OnTabSelectedListener {
+    private var alto: Int = 0
+
+    override fun onTabSelected(tab: TabLayout.Tab?) {
+        if (tab?.text == "Chat") {
+            ctx.runOnUiThread {
+                val btnsLayout: TableLayout = ctx.findViewById(R.id.tableLayoutBtnsStream)
+                btnsLayout.visibility = View.INVISIBLE
+                alto = btnsLayout.layoutParams.height
+                btnsLayout.layoutParams.height = 1
+            }
+        }
+    }
+
+    override fun onTabUnselected(tab: TabLayout.Tab?) {
+        if (tab?.text == "Chat") {
+            ctx.runOnUiThread {
+                val btnsLayout: TableLayout = ctx.findViewById(R.id.tableLayoutBtnsStream)
+                btnsLayout.visibility = View.VISIBLE
+                btnsLayout.layoutParams.height = alto
+            }
+        }
+    }
+
+    override fun onTabReselected(tab: TabLayout.Tab?) {
+        Log.d("TABSEL", "onTabReselected: " + tab?.text)
     }
 }

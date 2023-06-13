@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragments.FuentesFragment"
+    android:background="@color/dark_ocean_blue" >
+
+    <Space
+        android:id="@+id/space"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtTituloFuentes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/titulo_no_conectado"
+        android:textSize="34sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/space"
+        android:textColor="@color/white" />
+
+    <ImageButton
+        android:id="@+id/btnRecargar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="20dp"
+        android:backgroundTint="@color/dark_ocean_blue"
+        android:src="@drawable/ic_reload"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:padding="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtTituloFuentes"
+        android:contentDescription="@string/desc_escenas_reload" />
+
+    <ScrollView
+        android:id="@+id/scrollViewFuentes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnRecargar">
+
+        <TableLayout
+            android:id="@+id/sourcesLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:stretchColumns="0"
+            app:layout_constraintTop_toBottomOf="@+id/scrollViewFuentes">
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="UselessParent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:text="Fuente 1"
+                    android:textColor="@color/white"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp" />
+
+                <ImageButton
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:backgroundTint="@color/dark_ocean_blue"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:padding="1dp"
+                    android:src="@drawable/ic_visibility"
+                    android:contentDescription="@string/desc_escenas_reload" />
+            </TableRow>
+        </TableLayout>
+    </ScrollView>
+
+    <ImageView
+        android:id="@+id/imgViewer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/desc_fuentes_preview"
+        android:src="@drawable/ic_launcher_foreground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollViewFuentes" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

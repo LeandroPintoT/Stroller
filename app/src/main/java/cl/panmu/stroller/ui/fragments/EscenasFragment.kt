@@ -1,5 +1,6 @@
 package cl.panmu.stroller.ui.fragments
 
+import android.annotation.SuppressLint
 import android.graphics.LightingColorFilter
 import android.os.Bundle
 import android.os.StrictMode
@@ -18,6 +19,7 @@ import cl.panmu.stroller.R
 import cl.panmu.stroller.ui.main.PageViewModel
 import io.obswebsocket.community.client.model.Scene
 
+
 class EscenasFragment : Fragment() {
 
     private var _binding: View? = null
@@ -35,6 +37,7 @@ class EscenasFragment : Fragment() {
         StrictMode.setThreadPolicy(policy)
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -80,6 +83,7 @@ class EscenasFragment : Fragment() {
                 var rowEscenas: TableRow
 
                 obtenerAudio(currScene)
+                obtenerFuentes(currScene)
 
                 for (escena in escenas) {
                     // si es la primera columna, agrega una nueva fila
@@ -102,7 +106,10 @@ class EscenasFragment : Fragment() {
                     btn.text = escena.sceneName
                     btn.setOnClickListener {
                         viewModel.obsController.value?.setCurrentProgramScene(escena.sceneName) {
-                            recargaEscenas(escenas, escena.sceneName)
+                            if (it.isSuccessful) {
+                                requireActivity().runOnUiThread { viewModel.currScene(escena.sceneName) }
+                                recargaEscenas(escenas, escena.sceneName)
+                            }
                         }
                     }
                     // si es la escena seleccionada, le setea un color diferente
@@ -122,17 +129,14 @@ class EscenasFragment : Fragment() {
 
     private fun obtenerEscenas() {
         requireActivity().runOnUiThread {
-            lateinit var currScene: String
             lateinit var escenas: List<Scene>
 
             viewModel.obsController.value?.getCurrentProgramScene { res ->
-                currScene = res.currentProgramSceneName
+                requireActivity().runOnUiThread { viewModel.currScene(res.currentProgramSceneName) }
             }
             viewModel.obsController.value?.getSceneList { res ->
                 escenas = res.scenes.asReversed()
-                requireActivity().runOnUiThread {
-                    recargaEscenas(escenas, currScene)
-                }
+                requireActivity().runOnUiThread { recargaEscenas(escenas, viewModel.currScene.value!!) }
             }
         }
     }
@@ -160,6 +164,26 @@ class EscenasFragment : Fragment() {
                             requireActivity().runOnUiThread { viewModel.addToAudioList(item.sourceName, resInput.inputVolumeMul) }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    private fun obtenerFuentes(currScene: String) {
+        viewModel.clearSourceList()
+        viewModel.obsController.value?.getSceneItemList(currScene) { resItemList ->
+            for (item in resItemList.sceneItems) {
+                if (item.sourceType == "OBS_SOURCE_TYPE_SCENE") {
+                    viewModel.obsController.value?.getGroupSceneItemList(item.sourceName) { res2 ->
+                        for (item2 in res2.sceneItems) {
+                            if (item2.inputKind != "wasapi_output_capture" && item2.inputKind != "wasapi_input_capture") {
+                                requireActivity().runOnUiThread { viewModel.addToSourceList(item.sourceName, item2.sourceName, item2.sceneItemId, item.sourceName) }
+                            }
+                        }
+                    }
+                }
+                else if (item.inputKind != "wasapi_output_capture" && item.inputKind != "wasapi_input_capture") {
+                    requireActivity().runOnUiThread { viewModel.addToSourceList(currScene, item.sourceName, item.sceneItemId, "") }
                 }
             }
         }

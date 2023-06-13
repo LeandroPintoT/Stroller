@@ -79,28 +79,25 @@ class AudioFragment : Fragment() {
 
     private fun obtenerAudio() {
         viewModel.clearAudioList()
-        viewModel.obsController.value?.getCurrentProgramScene { resCurrScene ->
-            val currScene = resCurrScene.currentProgramSceneName
-            viewModel.obsController.value?.getSceneItemList(currScene) { resItemList ->
-                for (item in resItemList.sceneItems) {
-                    if (item.sourceType == "OBS_SOURCE_TYPE_SCENE") {
-                        viewModel.obsController.value?.getGroupSceneItemList(item.sourceName) { res2 ->
-                            for (item2 in res2.sceneItems) {
-                                if (item2.sourceType == "OBS_SOURCE_TYPE_INPUT") {
-                                    viewModel.obsController.value?.getInputVolume(item2.sourceName) { resInput ->
-                                        if (resInput.isSuccessful) {
-                                            requireActivity().runOnUiThread { viewModel.addToAudioList(item2.sourceName, resInput.inputVolumeMul) }
-                                        }
+        viewModel.obsController.value?.getSceneItemList(viewModel.currScene.value) { resItemList ->
+            for (item in resItemList.sceneItems) {
+                if (item.sourceType == "OBS_SOURCE_TYPE_SCENE") {
+                    viewModel.obsController.value?.getGroupSceneItemList(item.sourceName) { res2 ->
+                        for (item2 in res2.sceneItems) {
+                            if (item2.sourceType == "OBS_SOURCE_TYPE_INPUT") {
+                                viewModel.obsController.value?.getInputVolume(item2.sourceName) { resInput ->
+                                    if (resInput.isSuccessful) {
+                                        requireActivity().runOnUiThread { viewModel.addToAudioList(item2.sourceName, resInput.inputVolumeMul) }
                                     }
                                 }
                             }
                         }
                     }
-                    else if (item.sourceType == "OBS_SOURCE_TYPE_INPUT") {
-                        viewModel.obsController.value?.getInputVolume(item.sourceName) { resInput ->
-                            if (resInput.isSuccessful) {
-                                requireActivity().runOnUiThread { viewModel.addToAudioList(item.sourceName, resInput.inputVolumeMul) }
-                            }
+                }
+                else if (item.sourceType == "OBS_SOURCE_TYPE_INPUT") {
+                    viewModel.obsController.value?.getInputVolume(item.sourceName) { resInput ->
+                        if (resInput.isSuccessful) {
+                            requireActivity().runOnUiThread { viewModel.addToAudioList(item.sourceName, resInput.inputVolumeMul) }
                         }
                     }
                 }

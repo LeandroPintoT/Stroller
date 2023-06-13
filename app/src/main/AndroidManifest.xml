@@ -26,7 +26,7 @@
             android:name=".TabbedMainActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
-            android:windowSoftInputMode="stateVisible"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:focusableInTouchMode="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -52,6 +52,8 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+        <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
+            android:value="false" />
     </application>
 
 </manifest>

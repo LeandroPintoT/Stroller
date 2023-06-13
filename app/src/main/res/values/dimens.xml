@@ -11,4 +11,8 @@
     <dimen name="audio_text" tools:ignore="PxUsage">15px</dimen>
     <dimen name="audio_text_padding">20dp</dimen>
     <dimen name="audio_imgbtn">40dp</dimen>
+
+    <dimen name="fuente_text" tools:ignore="PxUsage">25px</dimen>
+    <dimen name="fuente_text_padding">20dp</dimen>
+    <dimen name="fuente_imgbtn">40dp</dimen>
 </resources>

@@ -45,7 +45,7 @@ import kotlin.math.floor
 import kotlin.math.roundToInt
 
 
-class ConexionFragment : Fragment(R.layout.main_activity) {
+class ConexionFragment : Fragment() {
 
     private var _binding: View? = null
     private lateinit var view: View
@@ -136,24 +136,24 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
             .password(pass) // Provide your password here
             .connectionTimeout(3) // Seconds the client will wait for OBS to respond
             .lifecycle() // para agregar callbacks
-            .onReady(::onObsReady) // agrega el callback onReady
-            .onConnect { onObsConnect() }
-            .onClose { code -> onObsClose(code) }
-            .onDisconnect(::onObsDisconnect)
-            .onCommunicatorError { toggleSpinner(view, false) }
-            .onControllerError { r ->
-                requireActivity().runOnUiThread {
-                    Log.d("ERROR", "Localized: ${r.throwable.localizedMessage} - Razon: ${r.reason} - Msg: ${r.throwable.message}")
-                    toggleSpinner(view, false)
-                    AlertDialog
-                        .Builder(requireActivity())
-                        .setTitle(R.string.alerta_titulo_conexion_error)
-                        .setMessage("${resources.getString(R.string.alerta_msg_conexion_error)}:\n${getRazon(r)}")
-                        .setPositiveButton(R.string.alerta_btn_pos_conexion_error) { _, _ -> }
-                        .show()
+                .onReady(::onObsReady) // agrega el callback onReady
+                .onConnect { onObsConnect() }
+                .onClose { code -> onObsClose(code) }
+                .onDisconnect(::onObsDisconnect)
+                .onCommunicatorError { toggleSpinner(view, false) }
+                .onControllerError { r ->
+                    requireActivity().runOnUiThread {
+                        Log.d("ERROR", "Localized: ${r.throwable.localizedMessage} - Razon: ${r.reason} - Msg: ${r.throwable.message}")
+                        toggleSpinner(view, false)
+                        AlertDialog
+                            .Builder(requireActivity())
+                            .setTitle(R.string.alerta_titulo_conexion_error)
+                            .setMessage("${resources.getString(R.string.alerta_msg_conexion_error)}:\n${getRazon(r)}")
+                            .setPositiveButton(R.string.alerta_btn_pos_conexion_error) { _, _ -> }
+                            .show()
+                    }
                 }
-            }
-            .and() // hace build al lifecycle
+                .and() // hace build al lifecycle
             .registerEventListener(StreamStateChangedEvent::class.java) {
                 requireActivity().runOnUiThread { viewModel.isStreaming(it.outputActive) }
             }
@@ -224,6 +224,10 @@ class ConexionFragment : Fragment(R.layout.main_activity) {
             btnDatos.visibility = View.INVISIBLE
             btnDatos.layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT)
             viewModel.isConnected(true)
+        }
+
+        viewModel.obsController.value?.getCurrentProgramScene {
+            requireActivity().runOnUiThread { viewModel.currScene(it.currentProgramSceneName) }
         }
 
         viewModel.obsController.value?.getRecordStatus {

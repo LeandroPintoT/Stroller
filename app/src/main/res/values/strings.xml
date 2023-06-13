@@ -2,13 +2,16 @@
     <string name="app_name">Stroller</string>
     <!-- NOMBRES FRAGMENTOS -->
     <string name="fragment_title_conexion">Conexión</string>
+    <string name="fragment_title_chat">Chat</string>
     <string name="fragment_title_transmision">Transmision</string>
     <string name="fragment_title_escenas">Escenas</string>
+    <string name="fragment_title_fuentes">Fuentes</string>
     <string name="fragment_title_audio">Audio</string>
     <!-- TITULOS -->
     <string name="titulo_no_conectado">No conectado</string>
     <string name="titulo_conexion">OBS Conectado</string>
     <string name="titulo_escenas">Escenas detectadas</string>
+    <string name="titulo_fuentes">Fuentes detectadas</string>
     <string name="titulo_audio">Pistas de audio</string>
     <string name="titulo_transmision">Transmisión</string>
     <string name="titulo_conexion_no_conectado">Conecta tu OBS</string>
@@ -22,6 +25,9 @@
     <string name="btn_detener_transmision">Detener transmisión</string>
     <string name="btn_iniciar_grabacion">Iniciar grabación</string>
     <string name="btn_detener_grabacion">Detener grabación</string>
+    <string name="btn_chat_recargar">Conectar</string>
+    <!-- HINTS -->
+    <string name="hint_chat_canal">Nombre del canal</string>
     <!-- TEXTOS CUERPO -->
     <string name="txt_conexion_duracion">Sesión:</string>
     <string name="txt_conexion_fps">FPS:</string>
@@ -29,6 +35,7 @@
     <string name="txt_conexion_skipped">C. perdidos:</string>
     <string name="txt_conexion_mem">Memoria:</string>
     <string name="txt_conexion_bitrate">Bitrate:</string>
+    <string name="txt_chat_webview"><p>Ingresa el nombre de tu canal en el campo de arriba y presiona "Conectar"</p></string>
     <!-- POPUPS -->
     <string name="txt_popup_host">IP:</string>
     <string name="txt_popup_puerto">Puerto:</string>
@@ -68,4 +75,8 @@
     <!-- DESCRIPCIONES -->
     <string name="desc_escenas_reload">Botón para obtener nuevamente las escenas desde OBS</string>
     <string name="desc_audio_imgbtn">Botón para silenciar el audio del input en OBS</string>
+    <string name="desc_fuentes_imgbtn">Botón para mostrar u ocultar la fuente en OBS</string>
+    <string name="desc_fuentes_preview">Espacio para mostrar un preview de lo mostrado en OBS</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

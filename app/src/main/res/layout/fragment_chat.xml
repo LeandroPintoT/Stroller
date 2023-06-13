@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragments.ChatFragment">
+
+    <EditText
+        android:id="@+id/etxt_chat_name"
+        android:layout_width="0dp"
+        android:layout_height="32dp"
+        android:ems="10"
+        android:includeFontPadding="false"
+        android:lineSpacingMultiplier="1"
+        android:lineSpacingExtra="0pt"
+        android:background="@null"
+        android:paddingTop="0pt"
+        android:paddingBottom="0pt"
+        android:inputType="text"
+        android:textSize="13sp"
+        android:paddingHorizontal="@dimen/text_padding"
+        android:hint="@string/hint_chat_canal"
+        app:layout_constraintEnd_toStartOf="@+id/btnConectarChat"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:autofillHints="username"
+        tools:ignore="LabelFor" />
+
+    <Button
+        android:id="@+id/btnConectarChat"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_weight="1"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:padding="10dp"
+        android:background="@color/dark_ocean_blue"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
+        android:text="@string/btn_chat_recargar"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/webView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/etxt_chat_name"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etxt_chat_name" />
+</androidx.constraintlayout.widget.ConstraintLayout>
