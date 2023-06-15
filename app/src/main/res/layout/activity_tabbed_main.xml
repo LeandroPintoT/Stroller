@@ -28,7 +28,7 @@
     <TableLayout
         android:id="@+id/tableLayoutBtnsStream"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:stretchColumns="*"
         android:background="@color/dark_ocean_blue"
         app:layout_constraintTop_toBottomOf="@+id/view_pager"
@@ -44,8 +44,7 @@
             <Button
                 android:id="@+id/btnStream"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_marginEnd="2dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/red"
                 android:text="@string/btn_iniciar_transmision"
@@ -55,11 +54,34 @@
             <Button
                 android:id="@+id/btnRecord"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="match_parent"
                 android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
                 android:layout_weight="1"
                 android:background="@color/red"
                 android:text="@string/btn_iniciar_grabacion"
+                android:textColor="@color/white"
+                tools:ignore="ButtonStyle" />
+
+            <Button
+                android:id="@+id/btnToggleReplay"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="2dp"
+                android:layout_weight="1"
+                android:background="@color/ocean_blue"
+                android:text="@string/btn_guardar_clip"
+                android:textColor="@color/white"
+                tools:ignore="ButtonStyle" />
+
+            <Button
+                android:id="@+id/btnGetReplay"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/ocean_blue"
+                android:text="@string/btn_guardar_clip"
                 android:textColor="@color/white"
                 tools:ignore="ButtonStyle" />
 

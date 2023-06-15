@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
@@ -20,6 +21,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import cl.panmu.stroller.R
 import cl.panmu.stroller.ui.main.PageViewModel
+import cl.panmu.stroller.util.ObsSourceItem
+import cl.panmu.stroller.util.Util
+import kotlin.math.roundToLong
 
 class FuentesFragment : Fragment() {
 
@@ -27,6 +31,9 @@ class FuentesFragment : Fragment() {
     private lateinit var view: View
     private val viewModel: PageViewModel by activityViewModels()
     lateinit var mainHandler: Handler
+    private var numFPS: Int = 1
+    private val minFPS: Int = 0
+    private val maxFPS: Int = 30
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -49,8 +56,14 @@ class FuentesFragment : Fragment() {
         _binding = inflater.inflate(R.layout.fragment_fuentes, container, false)
         view = _binding!!
 
+        val activity = requireActivity()
+
         val textoTitulo: TextView = view.findViewById(R.id.txtTituloFuentes)
         val btnRecargar: ImageButton = view.findViewById(R.id.btnRecargar)
+        val btnBajarFPS = view.findViewById<ImageButton>(R.id.btnBajarFPS)
+        val btnSubirFPS = view.findViewById<ImageButton>(R.id.btnSubirFPS)
+        val txtNumFPS = view.findViewById<TextView>(R.id.txtNumFPS)
+        val llPreview = view.findViewById<LinearLayout>(R.id.llPreview)
 
         btnRecargar.setOnClickListener {
             obtenerFuentes()
@@ -60,20 +73,48 @@ class FuentesFragment : Fragment() {
             requireActivity().runOnUiThread { textoTitulo.text = resources.getText(if (isConnected) R.string.titulo_fuentes else R.string.titulo_no_conectado) }
 
             if (isConnected) {
-                requireActivity().runOnUiThread{ btnRecargar.visibility = View.VISIBLE }
-                obtenerFuentes()
+                numFPS = 1
+                activity.runOnUiThread{
+                    txtNumFPS.text = numFPS.toString()
+                    btnBajarFPS.visibility = View.VISIBLE
+                    btnSubirFPS.visibility = View.VISIBLE
+                    llPreview.visibility = View.VISIBLE
+                    btnRecargar.visibility = View.VISIBLE
+                }
             }
             else {
-                requireActivity().runOnUiThread {
+                numFPS = 0
+                activity.runOnUiThread {
                     btnRecargar.visibility = View.INVISIBLE
+                    llPreview.visibility = View.INVISIBLE
                     val sourcesLayout: TableLayout = view.findViewById(R.id.sourcesLayout)
                     sourcesLayout.removeAllViews()
                 }
             }
         }
 
+        btnBajarFPS.setOnClickListener {
+            numFPS = Util.clamp(numFPS - 1, minFPS, maxFPS)
+            requireActivity().runOnUiThread {
+                txtNumFPS.text = if (numFPS == 0) resources.getString(R.string.texto_preview_desactivado) else numFPS.toString()
+
+                btnSubirFPS.visibility = View.VISIBLE
+                if (numFPS == minFPS)
+                    btnBajarFPS.visibility = View.INVISIBLE
+            }
+        }
+        btnSubirFPS.setOnClickListener {
+            numFPS = Util.clamp(numFPS + 1, minFPS, maxFPS)
+            requireActivity().runOnUiThread {
+                txtNumFPS.text = numFPS.toString()
+                btnBajarFPS.visibility = View.VISIBLE
+                if (numFPS == minFPS)
+                    btnSubirFPS.visibility = View.INVISIBLE
+            }
+        }
+
         viewModel.sourceList.observe(viewLifecycleOwner) {
-            recargarFuentes()
+            recargarFuentes(it)
         }
         return binding
     }
@@ -98,11 +139,11 @@ class FuentesFragment : Fragment() {
         }
     }
 
-    private fun recargarFuentes() {
+    private fun recargarFuentes(arr: ArrayList<ObsSourceItem>) {
         val tabla: TableLayout = view.findViewById(R.id.sourcesLayout)
         tabla.removeAllViews()
 
-        viewModel.sourceList.value?.sortedBy { fuente -> fuente.sceneName }?.forEach { fuente ->
+        arr.sortedBy { fuente -> fuente.sceneName }.forEach { fuente ->
             val row = TableRow(view.context)
             row.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT)
             tabla.addView(row)
@@ -142,13 +183,20 @@ class FuentesFragment : Fragment() {
 
     private val updateTextTask = object : Runnable {
         override fun run() {
-            mainHandler.postDelayed(this, 100)
-            viewModel.obsController.value?.getSourceScreenshot(viewModel.currScene.value, "jpg", 1280, 720, 90) {
-                if (it.isSuccessful) {
-                    val imgViewer = view.findViewById<ImageView>(R.id.imgViewer)
-                    val imageBytes = Base64.decode(it.imageData.replace("data:image/jpg;base64,", ""), 0)
-                    val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                    requireActivity().runOnUiThread { imgViewer.setImageBitmap(bitmap) }
+            if (numFPS == 0) {
+                mainHandler.postDelayed(this, 1000)
+                val imgViewer = view.findViewById<ImageView>(R.id.imgViewer)
+                requireActivity().runOnUiThread { imgViewer.visibility = View.INVISIBLE }
+            }
+            else {
+                mainHandler.postDelayed(this, ((1f / numFPS) * 1000).roundToLong())
+                viewModel.obsController.value?.getSourceScreenshot(viewModel.currScene.value, "jpg", 1280, 720, 90) {
+                    if (it.isSuccessful) {
+                        val imgViewer = view.findViewById<ImageView>(R.id.imgViewer)
+                        val imageBytes = Base64.decode(it.imageData.replace("data:image/jpg;base64,", ""), 0)
+                        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                        requireActivity().runOnUiThread { imgViewer.visibility = View.VISIBLE; imgViewer.setImageBitmap(bitmap) }
+                    }
                 }
             }
         }

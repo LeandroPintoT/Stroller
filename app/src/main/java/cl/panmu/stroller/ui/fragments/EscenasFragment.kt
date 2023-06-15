@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.LightingColorFilter
 import android.os.Bundle
 import android.os.StrictMode
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,7 @@ class EscenasFragment : Fragment() {
     private var _binding: View? = null
     private lateinit var view: View
     private val viewModel: PageViewModel by activityViewModels()
+    private var prevCurrScene: String? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -52,17 +54,27 @@ class EscenasFragment : Fragment() {
             obtenerEscenas()
         }
 
+        viewModel.currScene.observe(viewLifecycleOwner) {
+            if (it.trim().isNotEmpty() && prevCurrScene != it) {
+                Log.d("OBTENERESCENAS", "currScene - from: $prevCurrScene - to: $it")
+                prevCurrScene = it
+                obtenerEscenas(true)
+            }
+        }
+
         viewModel.isConnected.observe(viewLifecycleOwner) { isConnected ->
             textoTitulo.text = resources.getText(if (isConnected) R.string.titulo_escenas else R.string.titulo_no_conectado)
 
             if (isConnected) {
                 btnRecargar.visibility = View.VISIBLE
+                Log.d("OBTENERESCENAS", "isConnected")
                 obtenerEscenas()
             }
             else {
                 btnRecargar.visibility = View.INVISIBLE
                 val sceneLayout: TableLayout = view.findViewById(R.id.scenesLayout)
                 sceneLayout.removeAllViews()
+                prevCurrScene = null
             }
         }
 
@@ -70,8 +82,9 @@ class EscenasFragment : Fragment() {
     }
 
     private fun recargaEscenas(escenas: List<Scene>, currScene: String) {
-        // vacia la tabla
+        Log.d("recargaEscenas", "ESCENAS")
         requireActivity().runOnUiThread {
+            // vacia la tabla
             val sceneLayout: TableLayout = view.findViewById(R.id.scenesLayout)
             sceneLayout.removeAllViews()
 
@@ -108,7 +121,6 @@ class EscenasFragment : Fragment() {
                         viewModel.obsController.value?.setCurrentProgramScene(escena.sceneName) {
                             if (it.isSuccessful) {
                                 requireActivity().runOnUiThread { viewModel.currScene(escena.sceneName) }
-                                recargaEscenas(escenas, escena.sceneName)
                             }
                         }
                     }
@@ -127,13 +139,14 @@ class EscenasFragment : Fragment() {
         }
     }
 
-    private fun obtenerEscenas() {
-        requireActivity().runOnUiThread {
-            lateinit var escenas: List<Scene>
-
+    private fun obtenerEscenas(isCurrSceneChanged: Boolean = false) {
+        lateinit var escenas: List<Scene>
+        if (!isCurrSceneChanged) {
             viewModel.obsController.value?.getCurrentProgramScene { res ->
                 requireActivity().runOnUiThread { viewModel.currScene(res.currentProgramSceneName) }
             }
+        }
+        else {
             viewModel.obsController.value?.getSceneList { res ->
                 escenas = res.scenes.asReversed()
                 requireActivity().runOnUiThread { recargaEscenas(escenas, viewModel.currScene.value!!) }
@@ -142,6 +155,7 @@ class EscenasFragment : Fragment() {
     }
 
     private fun obtenerAudio(currScene: String) {
+        Log.d("AUDIO", "OBTENER")
         viewModel.clearAudioList()
         viewModel.obsController.value?.getSceneItemList(currScene) { res ->
             for (item in res.sceneItems) {

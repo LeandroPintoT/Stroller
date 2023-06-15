@@ -1,40 +1,45 @@
 <resources>
     <string name="app_name">Stroller</string>
     <!-- NOMBRES FRAGMENTOS -->
-    <string name="fragment_title_conexion">Conexión</string>
+    <string name="fragment_title_estado">Estado</string>
     <string name="fragment_title_chat">Chat</string>
-    <string name="fragment_title_transmision">Transmision</string>
+    <string name="fragment_title_transmision">Transmisión</string>
     <string name="fragment_title_escenas">Escenas</string>
     <string name="fragment_title_fuentes">Fuentes</string>
     <string name="fragment_title_audio">Audio</string>
     <!-- TITULOS -->
     <string name="titulo_no_conectado">No conectado</string>
-    <string name="titulo_conexion">OBS Conectado</string>
+    <string name="titulo_estado">OBS Conectado</string>
     <string name="titulo_escenas">Escenas detectadas</string>
     <string name="titulo_fuentes">Fuentes detectadas</string>
     <string name="titulo_audio">Pistas de audio</string>
-    <string name="titulo_transmision">Transmisión</string>
-    <string name="titulo_conexion_no_conectado">Conecta tu OBS</string>
+    <string name="titulo_transmision">stream</string>
+    <string name="titulo_estado_no_conectado">Conecta tu OBS</string>
     <string name="titulo_activity_tabbed_main">TabbedMainActivity</string>
     <!-- BOTONES -->
     <string name="btn_read_qr">Leer código QR</string>
     <string name="btn_enter_data">Escribir datos</string>
     <string name="btn_read_scenes">Recargar escenas</string>
     <string name="btn_disconnect">Desconectar</string>
-    <string name="btn_iniciar_transmision">Iniciar transmisión</string>
-    <string name="btn_detener_transmision">Detener transmisión</string>
+    <string name="btn_iniciar_transmision">Iniciar stream</string>
+    <string name="btn_detener_transmision">Detener stream</string>
+    <string name="btn_iniciar_buffer">Iniciar Búfer</string>
+    <string name="btn_detener_buffer">Detener Búfer</string>
+    <string name="btn_guardar_clip">Guardar Clip</string>
     <string name="btn_iniciar_grabacion">Iniciar grabación</string>
     <string name="btn_detener_grabacion">Detener grabación</string>
     <string name="btn_chat_recargar">Conectar</string>
+    <string name="btn_toggle_buffer_off">Activar búfer</string>
+    <string name="btn_toggle_buffer_on">Desactivar búfer</string>
     <!-- HINTS -->
     <string name="hint_chat_canal">Nombre del canal</string>
     <!-- TEXTOS CUERPO -->
-    <string name="txt_conexion_duracion">Sesión:</string>
-    <string name="txt_conexion_fps">FPS:</string>
-    <string name="txt_conexion_cpu">CPU:</string>
-    <string name="txt_conexion_skipped">C. perdidos:</string>
-    <string name="txt_conexion_mem">Memoria:</string>
-    <string name="txt_conexion_bitrate">Bitrate:</string>
+    <string name="txt_estado_duracion">Sesión:</string>
+    <string name="txt_estado_fps">FPS:</string>
+    <string name="txt_estado_cpu">CPU:</string>
+    <string name="txt_estado_skipped">C. perdidos:</string>
+    <string name="txt_estado_mem">Memoria:</string>
+    <string name="txt_estado_bitrate">Bitrate:</string>
     <string name="txt_chat_webview">
         <p>Si transmites en Youtube, ingresa el ID del directo en el campo de arriba (está en el link del directo, ej. https://www.youtube.com/watch?v=ID_DIRECTO) y presiona el botón CONECTAR.</p>
         <p>Si transmites en Twitch, ingresa el nombre de tu canal en el campo de arriba y presiona CONECTAR.</p>
@@ -51,6 +56,7 @@
     <!-- ALERTAS - TITULOS -->
     <string name="alerta_titulo_emision">Emisión</string>
     <string name="alerta_titulo_grabacion">Grabación</string>
+    <string name="alerta_titulo_buffer">Clips</string>
     <string name="alerta_titulo_conexion_error">Error al conectar</string>
     <!-- ALERTAS - MENSAJES -->
     <string name="alerta_msg_emision_inicio">¿Quieres comenzar a emitir en vivo?</string>
@@ -61,6 +67,7 @@
     <string name="alerta_msg_conexion_error_host">La IP ingresada no es válida</string>
     <string name="alerta_msg_conexion_error_port">No fue posible conectar con OBS</string>
     <string name="alerta_msg_conexion_error_pass">La contraseña ingresada es incorrecta</string>
+    <string name="alerta_msg_buffer">El búfer de repetición esta deshabilitado. Para habilitarlo, ve a Ajustes -> Salida -> Búfer de repetición</string>
     <!-- ALERTAS - BOTONES -->
     <string name="alerta_btn_pos_emision_inicio">Comenzar emisión</string>
     <string name="alerta_btn_pos_grabacion_inicio">Comenzar grabación</string>
@@ -72,15 +79,17 @@
     <string name="alerta_btn_neg_emision_final">Cancelar</string>
     <string name="alerta_btn_neg_grabacion_final">Cancelar</string>
     <!-- TOAST -->
+    <string name="toast_msg_pos_guardar_clip">El clip se guardó correctamente</string>
     <string name="toast_msg_neg_iniciar_emision">No fue posible iniciar la emisión</string>
     <string name="toast_msg_neg_detener_emision">No fue posible detener la emisión</string>
     <string name="toast_msg_neg_iniciar_grabacion">No fue posible iniciar la grabación</string>
     <string name="toast_msg_neg_detener_grabacion">No fue posible detener la grabación</string>
+    <string name="toast_msg_neg_guardar_clip">El búfer de repetición esta apagado</string>
     <!-- DESCRIPCIONES -->
     <string name="desc_escenas_reload">Botón para obtener nuevamente las escenas desde OBS</string>
     <string name="desc_audio_imgbtn">Botón para silenciar el audio del input en OBS</string>
     <string name="desc_fuentes_imgbtn">Botón para mostrar u ocultar la fuente en OBS</string>
     <string name="desc_fuentes_preview">Espacio para mostrar un preview de lo mostrado en OBS</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- TEXTOS VARIOS -->
+    <string name="texto_preview_desactivado">Desactivado</string>
 </resources>

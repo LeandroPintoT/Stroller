@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -35,7 +36,9 @@ import io.obswebsocket.community.client.OBSRemoteController
 import io.obswebsocket.community.client.WebSocketCloseCode
 import io.obswebsocket.community.client.listener.lifecycle.ReasonThrowable
 import io.obswebsocket.community.client.message.event.outputs.RecordStateChangedEvent
+import io.obswebsocket.community.client.message.event.outputs.ReplayBufferStateChangedEvent
 import io.obswebsocket.community.client.message.event.outputs.StreamStateChangedEvent
+import io.obswebsocket.community.client.message.event.scenes.CurrentProgramSceneChangedEvent
 import org.json.JSONObject
 import java.io.File
 import java.time.Instant
@@ -45,7 +48,7 @@ import kotlin.math.floor
 import kotlin.math.roundToInt
 
 
-class ConexionFragment : Fragment() {
+class EstadoFragment : Fragment() {
 
     private var _binding: View? = null
     private lateinit var view: View
@@ -73,7 +76,7 @@ class ConexionFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = inflater.inflate(R.layout.fragment_conexion, container, false)
+        _binding = inflater.inflate(R.layout.fragment_estado, container, false)
         view = _binding!!
         return binding
     }
@@ -118,49 +121,68 @@ class ConexionFragment : Fragment() {
             }
         }
 
-        val config = File(requireActivity().filesDir, "config.cfg")
-        if (config.exists() && config.readLines().isNotEmpty()) {
-            jsonObs = JSONObject(config.readLines().first())
-            conectar(jsonObs.get("host").toString(), jsonObs.get("port").toString(), jsonObs.get("pass").toString())
-        }
-        else {
-            recargaBotones(true)
+        if (viewModel.obsController.value == null) {
+            val config = File(requireActivity().filesDir, "config.cfg")
+            if (config.exists() && config.readLines().isNotEmpty()) {
+                jsonObs = JSONObject(config.readLines().first())
+                conectar(jsonObs.get("host").toString(), jsonObs.get("port").toString(), jsonObs.get("pass").toString())
+            } else {
+                recargaBotones(true)
+            }
         }
     }
 
     private fun conectar(host: String, port: String, pass: String) {
-        viewModel.obsController(OBSRemoteController.builder()
+        val activity = requireActivity()
+        val obscon = OBSRemoteController.builder()
             .autoConnect(false)
             .host(host) // Default host
             .port(Integer.parseInt(port)) // Default port
             .password(pass) // Provide your password here
             .connectionTimeout(3) // Seconds the client will wait for OBS to respond
             .lifecycle() // para agregar callbacks
-                .onReady(::onObsReady) // agrega el callback onReady
-                .onConnect { onObsConnect() }
-                .onClose { code -> onObsClose(code) }
-                .onDisconnect(::onObsDisconnect)
-                .onCommunicatorError { toggleSpinner(view, false) }
-                .onControllerError { r ->
-                    requireActivity().runOnUiThread {
-                        Log.d("ERROR", "Localized: ${r.throwable.localizedMessage} - Razon: ${r.reason} - Msg: ${r.throwable.message}")
-                        toggleSpinner(view, false)
-                        AlertDialog
-                            .Builder(requireActivity())
-                            .setTitle(R.string.alerta_titulo_conexion_error)
-                            .setMessage("${resources.getString(R.string.alerta_msg_conexion_error)}:\n${getRazon(r)}")
-                            .setPositiveButton(R.string.alerta_btn_pos_conexion_error) { _, _ -> }
-                            .show()
-                    }
+            .onReady(::onObsReady) // agrega el callback onReady
+            .onConnect { onObsConnect() }
+            .onClose { code -> onObsClose(code) }
+            .onDisconnect(::onObsDisconnect)
+            .onCommunicatorError { e -> Log.d("COMERROR", "Razon: ${e.reason}"); toggleSpinner(view, false) }
+            .onControllerError { r ->
+                activity.runOnUiThread {
+                    Log.d("ERROR", "Localized: ${r.throwable.localizedMessage} - Razon: ${r.reason} - Msg: ${r.throwable.message}")
+                    toggleSpinner(view, false)
+                    AlertDialog
+                        .Builder(requireActivity())
+                        .setTitle(R.string.alerta_titulo_conexion_error)
+                        .setMessage("${resources.getString(R.string.alerta_msg_conexion_error)}:\n${getRazon(r)}")
+                        .setPositiveButton(R.string.alerta_btn_pos_conexion_error) { _, _ -> }
+                        .show()
                 }
-                .and() // hace build al lifecycle
+            }
+            .and() // hace build al lifecycle
             .registerEventListener(StreamStateChangedEvent::class.java) {
-                requireActivity().runOnUiThread { viewModel.isStreaming(it.outputActive) }
+                activity.runOnUiThread { viewModel.isStreaming(it.outputActive) }
+            }
+            .registerEventListener(CurrentProgramSceneChangedEvent::class.java) {
+                activity.runOnUiThread { viewModel.currScene(it.sceneName) }
             }
             .registerEventListener(RecordStateChangedEvent::class.java) {
-                requireActivity().runOnUiThread { viewModel.isRecording(it.outputActive) }
+                activity.runOnUiThread { viewModel.isRecording(it.outputActive) }
             }
-            .build())
+            .registerEventListener(ReplayBufferStateChangedEvent::class.java) {
+                activity.runOnUiThread {
+                    if (it.outputState.contains("STOPPED") || it.outputState.contains("STARTED")) {
+                        val btnToggleReplay = activity.findViewById<Button>(R.id.btnToggleReplay)
+                        val btnGetReplay = activity.findViewById<Button>(R.id.btnGetReplay)
+                        btnToggleReplay.text = resources.getString(if (it.outputActive) R.string.btn_detener_buffer else R.string.btn_iniciar_buffer)
+                        btnGetReplay.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.ocean_blue, null))
+                        btnGetReplay.isEnabled = true
+                        Toast.makeText(activity, "Búfer " + if (it.outputActive) "encendido" else "apagado", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .build()
+
+        activity.runOnUiThread { viewModel.obsController(obscon) }
 
         toggleSpinner(view, true)
 
@@ -171,21 +193,22 @@ class ConexionFragment : Fragment() {
 
     @SuppressLint("InflateParams")
     private fun toggleSpinner(view: View, show: Boolean) {
-        requireActivity().runOnUiThread {
-            if (show && !this::loadingWindow.isInitialized) {
-                val popupView = LayoutInflater.from(view.context).inflate(R.layout.loading_spinner, null)
-                popupView.findViewById<ConstraintLayout>(R.id.loadingBackground).background.alpha = 150
-                // crea la ventana del popup, si no es focusable, no se puede levantar el teclado para los edittext
-                loadingWindow = PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true)
-                loadingWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
-            }
-            else if (show) {
-                loadingWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
-            }
-            else if (this::loadingWindow.isInitialized) {
-                loadingWindow.dismiss()
+        try {
+            requireActivity().runOnUiThread {
+                if (show && !this::loadingWindow.isInitialized) {
+                    val popupView = LayoutInflater.from(view.context).inflate(R.layout.loading_spinner, null)
+                    popupView.findViewById<ConstraintLayout>(R.id.loadingBackground).background.alpha = 150
+                    // crea la ventana del popup, si no es focusable, no se puede levantar el teclado para los edittext
+                    loadingWindow = PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true)
+                    loadingWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+                } else if (show) {
+                    loadingWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+                } else if (this::loadingWindow.isInitialized) {
+                    loadingWindow.dismiss()
+                }
             }
         }
+        catch (_: Exception) { }
     }
 
     private fun getRazon(r: ReasonThrowable): String {
@@ -217,12 +240,9 @@ class ConexionFragment : Fragment() {
     private fun onObsReady() {
         Log.d("ONOBSREADY", "ready")
 
+        val txtTitulo: TextView = view.findViewById(R.id.txtTituloConexion)
         requireActivity().runOnUiThread {
-            val txtTitulo: TextView = view.findViewById(R.id.txtTituloConexion)
-            txtTitulo.setText(R.string.titulo_conexion)
-            val btnDatos = view.findViewById<Button>(R.id.btnDatos)
-            btnDatos.visibility = View.INVISIBLE
-            btnDatos.layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT)
+            txtTitulo.setText(R.string.titulo_estado)
             viewModel.isConnected(true)
         }
 
@@ -231,23 +251,25 @@ class ConexionFragment : Fragment() {
         }
 
         viewModel.obsController.value?.getRecordStatus {
-            if (it.outputActive)
+            if (it.outputActive) {
+                val dif = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC).toInstant().toEpochMilli() - it.outputDuration.toLong()
+                val ldt = Instant.ofEpochMilli(dif).atZone(ZoneOffset.UTC).toLocalDateTime()
                 requireActivity().runOnUiThread {
-                    val dif = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC).toInstant().toEpochMilli() - it.outputDuration.toLong()
-                    val ldt = Instant.ofEpochMilli(dif).atZone(ZoneOffset.UTC).toLocalDateTime()
                     viewModel.timeRecord(ldt)
                     viewModel.isRecording(it.outputActive)
                 }
+            }
         }
 
         viewModel.obsController.value?.getStreamStatus {
-            if (it.outputActive)
+            if (it.outputActive) {
+                val dif = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC).toInstant().toEpochMilli() - it.outputDuration.toLong()
+                val ldt = Instant.ofEpochMilli(dif).atZone(ZoneOffset.UTC).toLocalDateTime()
                 requireActivity().runOnUiThread {
-                    val dif = LocalDateTime.now(ZoneOffset.UTC).atZone(ZoneOffset.UTC).toInstant().toEpochMilli() - it.outputDuration.toLong()
-                    val ldt = Instant.ofEpochMilli(dif).atZone(ZoneOffset.UTC).toLocalDateTime()
                     viewModel.timeStream(ldt)
                     viewModel.isStreaming(it.outputActive)
                 }
+            }
         }
 
         guardaDatos(jsonObs)
@@ -278,17 +300,19 @@ class ConexionFragment : Fragment() {
         Log.d("ONOBSDISCONNECT", "Desconectado")
         requireActivity().runOnUiThread {
             val txtTitulo: TextView = view.findViewById(R.id.txtTituloConexion)
-            txtTitulo.setText(R.string.titulo_conexion_no_conectado)
-            val btnDatos = view.findViewById<Button>(R.id.btnDatos)
-            btnDatos.visibility = View.VISIBLE
-            btnDatos.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT)
+            txtTitulo.setText(R.string.titulo_estado_no_conectado)
             viewModel.isConnected(false)
         }
     }
 
     private fun recargaBotones(isNowDisconnected: Boolean) {
         val btn: Button = view.findViewById(R.id.btnConDescon)
-        btn.setText(if (isNowDisconnected) R.string.btn_read_qr else R.string.btn_disconnect)
+        val btnDatos = view.findViewById<Button>(R.id.btnDatos)
+        requireActivity().runOnUiThread {
+            btnDatos.visibility = if (isNowDisconnected) View.VISIBLE else View.INVISIBLE
+            btnDatos.layoutParams = LinearLayout.LayoutParams(if (isNowDisconnected) LinearLayout.LayoutParams.WRAP_CONTENT else 0, LinearLayout.LayoutParams.MATCH_PARENT)
+            btn.setText(if (isNowDisconnected) R.string.btn_read_qr else R.string.btn_disconnect)
+        }
         // si esta desconectado, hace el startForResult, si no, desconecta y recarga
         btn.setOnClickListener(
             if (isNowDisconnected) { {

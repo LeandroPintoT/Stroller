@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -32,7 +31,6 @@ class QrScanner : ComponentActivity(R.layout.scan_qr_activity) {
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        Log.d("INFO", "inicializao")
         checkCameraPermission()
     }
 
