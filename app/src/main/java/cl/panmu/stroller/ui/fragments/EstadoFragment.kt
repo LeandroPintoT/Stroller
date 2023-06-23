@@ -16,6 +16,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -58,6 +61,7 @@ class EstadoFragment : Fragment() {
     var lastBytes: Long = 0
     private val viewModel: PageViewModel by activityViewModels()
     private lateinit var loadingWindow: PopupWindow
+    private lateinit var twitchConnectWindow: PopupWindow
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -237,6 +241,21 @@ class EstadoFragment : Fragment() {
         }
     }
 
+    private fun guardarConfigTwitch(conectar: Boolean, accessToken: String = "") {
+        val config = File(requireActivity().filesDir, "serviceTwitch.cfg")
+        val json = JSONObject()
+        json.put("conectar", conectar)
+        json.put("access_token", accessToken)
+        if (config.exists()) {
+            if (config.delete() && config.createNewFile())
+                config.writeText(json.toString())
+        } else {
+            if (config.createNewFile())
+                config.writeText(json.toString())
+        }
+    }
+
+    @SuppressLint("SetJavaScriptEnabled", "InflateParams")
     private fun onObsReady() {
         Log.d("ONOBSREADY", "ready")
 
@@ -273,6 +292,39 @@ class EstadoFragment : Fragment() {
         }
 
         guardaDatos(jsonObs)
+
+        viewModel.obsController.value?.getStreamServiceSettings {
+            if (it.streamServiceSettings.get("service").asString == "Twitch") {
+                requireActivity().runOnUiThread {
+                    AlertDialog
+                        .Builder(requireActivity())
+                        .setTitle(R.string.alerta_titulo_conexion_twitch)
+                        .setMessage(resources.getString(R.string.alerta_msg_conexion_twitch))
+                        .setPositiveButton(R.string.alerta_btn_pos_conexion_twitch) { _, _ ->
+                            val popupView = LayoutInflater.from(view.context).inflate(R.layout.popup_conexion_twitch, null)
+                            popupView.findViewById<ConstraintLayout>(R.id.popupBackground).background.alpha = 150
+                            // crea la ventana del popup, si no es focusable, no se puede levantar el teclado para los edittext
+                            twitchConnectWindow = PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true)
+                            twitchConnectWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+                            val wv = popupView.findViewById<WebView>(R.id.popupWebView)
+                            val clientId = "pzby9trriei2ild0qgy3w2k4vcu1un"
+                            val url = "https://id.twitch.tv/oauth2/authorize" +
+                                    "?response_type=token" +
+                                    "&client_id=$clientId" +
+                                    "&redirect_uri=http://localhost" +
+                                    "&scope=channel%3Amanage%3Apolls+channel%3Aread%3Apolls" +
+                                    "&state=c3ab8aa609ea11e793ae92361f002671"
+                            wv.settings.javaScriptEnabled = true
+                            wv.webViewClient = HandleTwitchRequest(this)
+                            wv.loadUrl(url)
+                        }
+                        .setNegativeButton(R.string.alerta_btn_neg_conexion_twitch) { _, _ ->
+                            guardarConfigTwitch(false)
+                        }
+                        .show()
+                }
+            }
+        }
 
         toggleSpinner(view, false)
     }
@@ -406,6 +458,26 @@ class EstadoFragment : Fragment() {
         }
     }
 
+    fun conectarWsTwitch(accessToken: String) {
+        /*val twitchURL = "eventsub.wss.twitch.tv"
+        val twitchPath = "/ws"
+        val ws = HttpClient(CIO) {
+            install(WebSockets) {
+                contentConverter = KotlinxWebsocketSerializationConverter(Json)
+            }
+        }
+
+        runBlocking {
+
+            ws.wss(HttpMethod.Get, twitchURL, null, twitchPath) {
+                val res = incoming.receive() as? Frame.Text
+                Log.d("WEBSOCKET", "" + res?.readText())
+            }
+        }*/
+        Log.d("conectarWsTwitch", "accessToken: $accessToken")
+        twitchConnectWindow.dismiss()
+    }
+
     override fun onPause() {
         super.onPause()
         mainHandler.removeCallbacks(updateTextTask)
@@ -419,5 +491,19 @@ class EstadoFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+}
+
+private class HandleTwitchRequest(private val fragment: EstadoFragment): WebViewClient() {
+    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+        Log.d("TWITCHREQUEST", "Cargando pagina: ${request?.url} - host: ${request?.url?.host}")
+        if (request != null && request.url.host == "localhost") {
+            val url = request.url.toString()
+            val sinBase = url.substring(url.indexOf("#") + 1)
+            val cortado = url.substring(0, sinBase.indexOf("/"))
+            fragment.conectarWsTwitch(cortado)
+            return false
+        }
+        return true
     }
 }

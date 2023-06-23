@@ -3,7 +3,6 @@ package cl.panmu.stroller.ui.fragments
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.StrictMode
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,8 +69,6 @@ class ChatFragment : Fragment() {
     @SuppressLint("SetJavaScriptEnabled")
     private fun conectarChat() {
         viewModel.obsController.value?.getStreamServiceSettings {
-            Log.d("STREAMSERVICE", it.streamServiceSettings.toString())
-
             val etxtCanal = view.findViewById<EditText>(R.id.etxt_chat_name)
             val wv = view.findViewById<WebView>(R.id.webView)
 
