@@ -61,9 +61,13 @@ class ChatFragment : Fragment() {
             conectarChat()
         }
 
-        conectarChat()
-
         return binding
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        conectarChat()
     }
 
     @SuppressLint("SetJavaScriptEnabled")

@@ -41,9 +41,11 @@
     <string name="txt_estado_mem">Memoria:</string>
     <string name="txt_estado_bitrate">Bitrate:</string>
     <string name="txt_chat_webview">
-        <p>Si transmites en Youtube, ingresa el ID del directo en el campo de arriba (está en el link del directo, ej. https://www.youtube.com/watch?v=ID_DIRECTO) y presiona el botón CONECTAR.</p>
-        <p>Si transmites en Twitch, ingresa el nombre de tu canal en el campo de arriba y presiona CONECTAR.</p>
-        <p>PD: Puedes conectarte a cualquier chat de Twitch o Youtube en esta pestaña, pero lo ideal es usar el tuyo.</p>
+        <![CDATA[
+            <p>Si transmites en Youtube, ingresa el ID del directo en el campo de arriba (está en el link del directo, ej. https://www.youtube.com/watch?v=ID_DIRECTO) y presiona el botón CONECTAR.<br></p>
+            <p>Si transmites en Twitch, ingresa el nombre de tu canal en el campo de arriba y presiona CONECTAR.<br></p>
+            <p>PD: Puedes conectarte a cualquier chat de Twitch o Youtube en esta pestaña, pero lo ideal es usar el tuyo.</p>
+        ]]>
     </string>
     <!-- POPUPS -->
     <string name="txt_popup_host">IP:</string>
@@ -59,6 +61,7 @@
     <string name="alerta_titulo_buffer">Clips</string>
     <string name="alerta_titulo_conexion_error">Error al conectar</string>
     <string name="alerta_titulo_conexion_twitch">Servicios de Twitch</string>
+    <string name="alerta_titulo_sin_permiso">Permiso requerido</string>
     <!-- ALERTAS - MENSAJES -->
     <string name="alerta_msg_emision_inicio">¿Quieres comenzar a emitir en vivo?</string>
     <string name="alerta_msg_emision_final">¿Quieres terminar la emisión en vivo?</string>
@@ -69,7 +72,12 @@
     <string name="alerta_msg_conexion_error_port">No fue posible conectar con OBS</string>
     <string name="alerta_msg_conexion_error_pass">La contraseña ingresada es incorrecta</string>
     <string name="alerta_msg_buffer">El búfer de repetición esta deshabilitado. Para habilitarlo, ve a Ajustes -> Salida -> Búfer de repetición</string>
-    <string name="alerta_msg_conexion_twitch">Se detectó que tu servicio de streaming es twitch. Si quieres, puedes darle acceso a la aplicación para controlar un par de cosas más.</string>
+    <string name="alerta_msg_conexion_twitch">Se detectó que tu servicio de streaming es Twitch.
+        Si quieres, puedes darle acceso a la aplicación para controlar un par de cosas más.</string>
+    <string name="alerta_msg_sin_permiso_camara">La aplicación necesita acceder a la cámara para poder actuar como webcam.
+        Puedes usar la aplicación sin conceder el permiso, pero no podrás usar esta característica.</string>
+    <string name="alerta_msg_sin_permiso_camara_qr">La aplicación necesita acceder a la cámara para poder leer el código QR.
+        Si no quieres conceder el permiso, usa los campos de la pantalla principal para conectar.</string>
     <!-- ALERTAS - BOTONES -->
     <string name="alerta_btn_pos_emision_inicio">Comenzar emisión</string>
     <string name="alerta_btn_pos_grabacion_inicio">Comenzar grabación</string>

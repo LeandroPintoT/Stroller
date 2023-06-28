@@ -1,19 +1,22 @@
 package cl.panmu.stroller.util
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import cl.panmu.stroller.R
 import cl.panmu.stroller.databinding.ScanQrActivityBinding
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -22,6 +25,7 @@ class QrScanner : ComponentActivity(R.layout.scan_qr_activity) {
 
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var binding: ScanQrActivityBinding
+    private lateinit var reqPermissionLauncher: ActivityResultLauncher<Array<String>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +49,13 @@ class QrScanner : ComponentActivity(R.layout.scan_qr_activity) {
     private fun checkCameraPermission() {
         try {
             val requiredPermissions = arrayOf(Manifest.permission.CAMERA)
-            ActivityCompat.requestPermissions(this, requiredPermissions, 0)
+            if (!this::reqPermissionLauncher.isInitialized) {
+                val req = ActivityResultContracts.RequestMultiplePermissions()
+                reqPermissionLauncher = registerForActivityResult(req) {
+                    checkIfCameraPermissionIsGranted()
+                }
+            }
+            reqPermissionLauncher.launch(requiredPermissions)
         } catch (e: IllegalArgumentException) {
             checkIfCameraPermissionIsGranted()
         }
@@ -62,12 +72,16 @@ class QrScanner : ComponentActivity(R.layout.scan_qr_activity) {
             startCamera()
         } else {
             // Permission denied
-            MaterialAlertDialogBuilder(this)
-                .setTitle("Permission required")
-                .setMessage("This application needs to access the camera to process barcodes")
-                .setPositiveButton("Ok") { _, _ ->
-                    // Keep asking for permission until granted
-                    checkCameraPermission()
+            AlertDialog
+                .Builder(this@QrScanner)
+                .setTitle(resources.getString(R.string.alerta_titulo_sin_permiso))
+                .setMessage(resources.getString(R.string.alerta_msg_sin_permiso_camara_qr))
+                .setPositiveButton("Ok") { _, _ -> }
+                .setNegativeButton("Abrir configuración") { _, _ ->
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    val uri = Uri.fromParts("package", this@QrScanner.packageName, null)
+                    intent.data = uri
+                    startActivity(intent)
                 }
                 .setCancelable(false)
                 .create()
@@ -76,18 +90,6 @@ class QrScanner : ComponentActivity(R.layout.scan_qr_activity) {
                     show()
                 }
         }
-    }
-
-    /**
-     * 3. This function is executed once the user has granted or denied the missing permission
-     */
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        checkIfCameraPermissionIsGranted()
     }
 
     /**
