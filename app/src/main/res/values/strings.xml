@@ -5,17 +5,21 @@
     <string name="fragment_title_chat">Chat</string>
     <string name="fragment_title_transmision">Transmisión</string>
     <string name="fragment_title_escenas">Escenas</string>
+    <string name="fragment_title_utilidades">Util</string>
     <string name="fragment_title_fuentes">Fuentes</string>
     <string name="fragment_title_audio">Audio</string>
     <!-- TITULOS -->
     <string name="titulo_no_conectado">No conectado</string>
     <string name="titulo_estado">OBS Conectado</string>
     <string name="titulo_escenas">Escenas detectadas</string>
+    <string name="titulo_utilidades">Utilidades</string>
     <string name="titulo_fuentes">Fuentes detectadas</string>
     <string name="titulo_audio">Pistas de audio</string>
     <string name="titulo_transmision">stream</string>
     <string name="titulo_estado_no_conectado">Conecta tu OBS</string>
     <string name="titulo_activity_tabbed_main">TabbedMainActivity</string>
+    <!-- SUBTITULOS -->
+    <string name="subtitulo_contador">Contador de Muertes</string>
     <!-- BOTONES -->
     <string name="btn_read_qr">Leer código QR</string>
     <string name="btn_enter_data">Escribir datos</string>
@@ -31,6 +35,8 @@
     <string name="btn_chat_recargar">Conectar</string>
     <string name="btn_toggle_buffer_off">Activar búfer</string>
     <string name="btn_toggle_buffer_on">Desactivar búfer</string>
+    <string name="btn_restar_cotador">-</string>
+    <string name="btn_sumar_cotador">+</string>
     <!-- HINTS -->
     <string name="hint_chat_canal">Nombre del canal</string>
     <!-- TEXTOS CUERPO -->

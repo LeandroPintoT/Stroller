@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
+import android.text.TextUtils
 import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
@@ -149,10 +150,12 @@ class FuentesFragment : Fragment() {
             tabla.addView(row)
 
             val texto = TextView(view.context)
-            texto.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT)
+            texto.layoutParams = TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT)
             val txt = if(fuente.sourceParent == "") fuente.sourceName else "(${fuente.sourceParent}) ${fuente.sourceName}"
             texto.text = txt
             texto.textSize = resources.getDimension(R.dimen.fuente_text)
+            texto.maxLines = 1
+            texto.ellipsize = TextUtils.TruncateAt.END
             texto.setPadding(resources.getDimension(R.dimen.fuente_text_padding).toInt(), 0, resources.getDimension(R.dimen.fuente_text_padding).toInt(), 0)
             texto.setTextColor(resources.getColor(R.color.white, null))
             row.addView(texto)

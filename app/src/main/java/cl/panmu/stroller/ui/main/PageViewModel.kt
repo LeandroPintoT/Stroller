@@ -26,6 +26,7 @@ class PageViewModel : ViewModel() {
     var isRecording: LiveData<Boolean> = mutableIsRecording
     var currScene: LiveData<String> = mutableCurrScene
     var username: LiveData<String> = mutableUsername
+    var host: String = ""
     var timeStream: LiveData<LocalDateTime> = mutableTimeStream
     var timeRecord: LiveData<LocalDateTime> = mutableTimeRecord
     var audioList: LiveData<ArrayList<ObsAudioItem>> = mutableAudioList

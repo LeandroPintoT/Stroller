@@ -129,6 +129,7 @@ class EstadoFragment : Fragment() {
             val config = File(requireActivity().filesDir, "config.cfg")
             if (config.exists() && config.readLines().isNotEmpty()) {
                 jsonObs = JSONObject(config.readLines().first())
+                viewModel.host = jsonObs.get("host").toString()
                 conectar(jsonObs.get("host").toString(), jsonObs.get("port").toString(), jsonObs.get("pass").toString())
             } else {
                 recargaBotones(true)

@@ -17,6 +17,7 @@ import cl.panmu.stroller.ui.fragments.ChatFragment
 import cl.panmu.stroller.ui.fragments.EscenasFragment
 import cl.panmu.stroller.ui.fragments.EstadoFragment
 import cl.panmu.stroller.ui.fragments.FuentesFragment
+import cl.panmu.stroller.ui.fragments.UtilidadesFragment
 import cl.panmu.stroller.ui.main.PageViewModel
 import cl.panmu.stroller.ui.main.PagerAdapter
 import com.google.android.material.tabs.TabLayout
@@ -44,6 +45,7 @@ class TabbedMainActivity : AppCompatActivity() {
         viewPager.offscreenPageLimit = 4
         pagerAdapter.addFragment(EstadoFragment(), resources.getString(R.string.fragment_title_estado))
         pagerAdapter.addFragment(EscenasFragment(), resources.getString(R.string.fragment_title_escenas))
+        pagerAdapter.addFragment(UtilidadesFragment(), resources.getString(R.string.fragment_title_utilidades))
         pagerAdapter.addFragment(FuentesFragment(), resources.getString(R.string.fragment_title_fuentes))
         pagerAdapter.addFragment(AudioFragment(), resources.getString(R.string.fragment_title_audio))
         pagerAdapter.addFragment(ChatFragment(), resources.getString(R.string.fragment_title_chat))
